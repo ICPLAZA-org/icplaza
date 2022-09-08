@@ -38,11 +38,3 @@ func GetAuthorizerBizsKey(authorizer sdk.AccAddress) []byte {
 func GetGranteeAuthBizsKey(grantee sdk.AccAddress) []byte {
 	return append(GranteeAuthBizsKey, address.MustLengthPrefix(grantee)...)
 }
-
-func ParseGranteeAuthBizsKey(key []byte) sdk.AccAddress {
-	addrs := key[1:] // remove prefix bytes
-	// addrLen := addrs[0]
-
-	granteeAddr := addrs[1:]
-	return granteeAddr
-}

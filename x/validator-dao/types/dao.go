@@ -22,10 +22,3 @@ func NewAcqBiz(from, bizName string, amount, price sdk.Coin) AcqBiz {
 		Price: price,
 	}
 }
-
-func NewGranteeBizs(granteeAddr sdk.AccAddress, bizs AcqBizs) GranteeBizs {
-	return GranteeBizs {
-		Grantee: granteeAddr.String(),
-		Bizs: bizs,
-	}
-}

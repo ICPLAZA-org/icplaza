@@ -22,7 +22,7 @@ var (
 	_ evmtypes.EvmHooks = Hooks{}
 )
 
-// Create new distribution hooks
+// Create new dao hooks
 func (k Keeper) Hooks() Hooks { 
 	return Hooks{k} 
 }
@@ -44,6 +44,7 @@ func (h Hooks) PostTxProcessing(
 	receipt *ethtypes.Receipt,
 ) error {
 
+	// Only the contract deployment permission is concerned
 	if msg.To() != nil {
 		return nil
 	}
