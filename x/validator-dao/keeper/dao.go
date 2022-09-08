@@ -93,7 +93,7 @@ func (k Keeper) ReqAuthorization(ctx sdk.Context, granteeAddr, authorizerAddr sd
 // WithdrawAuthorization withdraw grantee's escrow coins
 func (k Keeper) WithdrawAuthorization(ctx sdk.Context, granteeAddr, authorizerAddr sdk.AccAddress, bizName string) (sdk.Coin, error) {
 	err := nil
-	rc := sdk.ZeroCoin()
+	rc := sdk.NewCoin(sdk.DefaultBondDenom, sdk.ZeroInt())
 
 	granteeAuthBizs := k.GetGranteeAuthBizs(ctx, granteeAddr)
 	for i, authBiz := range granteeAuthBizs.Bizs {
@@ -107,7 +107,7 @@ func (k Keeper) WithdrawAuthorization(ctx sdk.Context, granteeAddr, authorizerAd
 		}
 	}
 
-	if rc.IsGT(sdk.ZeroCoin()) {
+	if rc.IsPositive() {
 		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, granteeAddr, sdk.NewCoins(rc))
 	}
 
