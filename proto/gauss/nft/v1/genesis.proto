@@ -1,0 +1,21 @@
+syntax = "proto3";
+package gauss.nft.v1;
+
+import "gauss/nft/v1/nft.proto";
+import "gauss/nft/v1/tx.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/nft/types";
+
+// GenesisState defines the nft module's genesis state.
+message GenesisState {
+    // this line is used by starport scaffolding # genesis/proto/state
+    // this line is used by starport scaffolding # ibc/genesis/proto
+    option (gogoproto.equal) = false;
+    option (gogoproto.goproto_getters) = false;
+
+    // params defines all the parameters for the nft module.
+    Params params = 1 [(gogoproto.nullable) = false];
+    repeated LastPrice last_prices = 2;
+    repeated Nft nfts = 3;
+}

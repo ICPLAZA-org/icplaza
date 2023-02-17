@@ -1,0 +1,95 @@
+syntax = "proto3";
+package gauss.farm.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/farm/types";
+
+option (gogoproto.goproto_getters_all) = false;
+
+// Msg defines the farm Msg service.
+service Msg {
+  // CreatePool defines a method for creating a new farm pool
+  rpc CreatePool(MsgCreatePool) returns (MsgCreatePoolResponse);
+
+  // DestroyPool defines a method for destroying a existed farm pool
+  rpc DestroyPool(MsgDestroyPool) returns (MsgDestroyPoolResponse);
+
+  // Stake defines a method for staking some lp token to a farm pool
+  rpc Stake(MsgStake) returns (MsgStakeResponse);
+
+  // Unbond defines a method for unstaking some lp token from a farm pool and
+  // withdraw some reward
+  rpc Unbond(MsgUnbond) returns (MsgUnbondResponse);
+
+  // Withdraw defines a method withdraw some reward from a farm pool
+  rpc Withdraw(MsgWithdraw) returns (MsgWithdrawResponse);
+}
+
+message MsgCreatePool {
+  option (gogoproto.equal) = true;
+
+  string name = 1;
+  string description = 2;
+  int64  start_height = 3;
+  cosmos.base.v1beta1.Coin min_staking = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin rewards_per_block = 5 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+  repeated cosmos.base.v1beta1.Coin total_rewards = 6 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+  string creator = 7;
+}
+
+message MsgCreatePoolResponse {}
+
+message MsgDestroyPool {
+  option (gogoproto.equal) = true;
+
+  string pool_name = 1;
+  string creator = 2;
+}
+
+message MsgDestroyPoolResponse {}
+
+message MsgStake {
+  option (gogoproto.equal) = true;
+
+  string pool_name = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  string sender = 3;
+}
+
+message MsgStakeResponse {}
+
+message MsgUnbond {
+  option (gogoproto.equal) = true;
+
+  string pool_name = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  string sender = 3;
+}
+
+message MsgUnbondResponse {}
+
+message MsgWithdraw {
+  option (gogoproto.equal) = true;
+
+  string pool_name = 1;
+  string sender = 2;
+}
+
+message MsgWithdrawResponse {}

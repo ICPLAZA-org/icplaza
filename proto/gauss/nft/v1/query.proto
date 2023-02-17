@@ -1,0 +1,109 @@
+syntax = "proto3";
+package gauss.nft.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "gauss/nft/v1/tx.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/gauss/gauss/v6/x/nft/types";
+
+// Query defines the gRPC querier service.
+service Query {
+    // this line is used by starport scaffolding # 2
+    rpc Creator(QueryCreatorRequest) returns (QueryCreatorResponse) {
+        option (google.api.http).get = "/icplaza/nft/creator/{creator}";
+    }
+
+    // Query NFT info
+    rpc Nftoken(QueryNftokenRequest) returns (QueryNftokenResponse) {
+        option (google.api.http).get = "/icplaza/nft/token/{token_id}";
+    }
+
+
+    // Queries a list of collections items.
+    rpc Collections(QueryCollectionsRequest) returns (QueryCollectionsResponse) {
+        option (google.api.http).get = "/icplaza/nft/collections";
+    }
+
+
+    // Queries a list of collections items.
+    rpc Collection(QueryCollectionRequest) returns (QueryCollectionResponse) {
+        option (google.api.http).get = "/icplaza/nft/collection/{cate_id}";
+    }
+
+
+    // Owner queries the NFTs of the specified owner
+    rpc Owner(QueryOwnerRequest) returns (QueryOwnerResponse) {
+        option (google.api.http).get = "/icplaza/nft/owners/{owner}";
+    }
+    // search by name or token_id
+    rpc OwnerNfts(QueryNftsByNameOrTokenRequest) returns (QueryNftsByNameOrTokenResponse) {
+        option (google.api.http).get = "/icplaza/nft/nfts/{owner}";
+    }
+}
+
+// this line is used by starport scaffolding # 3
+message QueryCreatorRequest {
+    string creator = 1;
+    string cate_id = 2;
+    cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryCreatorResponse {
+    repeated Nft nfts = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryNftokenRequest {
+    string token_id = 1;
+}
+
+message QueryNftokenResponse {
+    Nft nft = 1;
+}
+
+message QueryCollectionsRequest {
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryCollectionsResponse {
+    repeated Nft nfts = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryCollectionRequest {
+    string cate_id = 1;
+    cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryCollectionResponse {
+    repeated Nft nfts = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryOwnerRequest is the request type for the Query/Owner RPC method
+message QueryOwnerRequest {
+    string owner = 1;
+    string cate_id = 2;
+    cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryOwnerResponse {
+    repeated Nft nfts = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+// search by name or tokenId
+message QueryNftsByNameOrTokenRequest {
+    string owner = 1;
+    string name = 2;
+    string token_id = 3;
+    cosmos.base.query.v1beta1.PageRequest pagination = 4;
+}
+
+message QueryNftsByNameOrTokenResponse {
+    repeated Nft nfts = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

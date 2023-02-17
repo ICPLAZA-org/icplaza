@@ -1,0 +1,21 @@
+syntax = "proto3";
+package gauss.pool.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+import "gauss/nftexpool/v1/params.proto";
+import "gauss/nftexpool/v1/tx.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/nftexpool/types";
+
+
+// GenesisState defines the pool module's genesis state.
+message GenesisState {
+    option (gogoproto.equal) = false;
+    option (gogoproto.goproto_getters) = false;
+
+    // params defines all the parameters for the nft module.
+    Params params = 1 [(gogoproto.nullable) = false];
+    repeated Pool pools = 2;
+    repeated Delegation delegations = 3;
+}

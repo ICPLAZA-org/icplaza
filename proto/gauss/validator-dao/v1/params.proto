@@ -1,0 +1,13 @@
+syntax = "proto3";
+package gauss.validatordao.v1;
+
+import "gogoproto/gogo.proto";
+import "gauss/validator-dao/v1/dao.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/validator-dao/types";
+
+// Params defines the parameters for the module.
+message Params {
+    option (gogoproto.goproto_stringer) = false;
+    repeated DaoBiz auth_bizs = 1 [(gogoproto.nullable) = false];
+}

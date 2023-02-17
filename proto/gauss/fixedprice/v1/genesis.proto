@@ -1,0 +1,33 @@
+syntax = "proto3";
+package gauss.fixedprice.v1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "gauss/fixedprice/v1/tx.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/fixedprice/types";
+
+// GenesisState defines the auction module's genesis state.
+message GenesisState {
+    option (gogoproto.equal) = false;
+    option (gogoproto.goproto_getters) = false;
+
+    // params defines all the parameters for the nft module.
+    Params params = 1 [(gogoproto.nullable) = false];
+}
+
+
+message Params {
+    option (gogoproto.equal) = true;
+    option (gogoproto.goproto_stringer) = false;
+
+
+    // 自动成交间隔
+    google.protobuf.Duration adjust_price_period = 1 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdduration) = true,
+        (gogoproto.jsontag) = "adjust_price_period,omitempty",
+        (gogoproto.moretags) = "yaml:\"adjust_price_period\""
+    ];
+    repeated Order orders = 2;
+}

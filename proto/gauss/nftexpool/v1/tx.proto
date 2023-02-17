@@ -1,0 +1,73 @@
+syntax = "proto3";
+package gauss.pool.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/nftexpool/types";
+
+// Msg defines the Msg service.
+service Msg {
+    rpc Undelegate(MsgUndelegate) returns (MsgUndelegateResponse);
+    rpc Delegate(MsgDelegate) returns (MsgDelegateResponse);
+    rpc UpdatePool(MsgUpdatePool) returns (MsgUpdatePoolResponse);
+    rpc CreatePool(MsgCreatePool) returns (MsgCreatePoolResponse);
+}
+
+message MsgDelegate {
+    string delegator = 1;
+    string pool_address = 2;
+    cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgDelegateResponse {
+}
+
+message Delegation {
+    string delegator = 1;
+    string pool_address = 2;
+    repeated cosmos.base.v1beta1.Coin coins = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgUndelegate {
+    string sender = 1;
+    string delegator = 2;
+    string pool_address = 3;
+    cosmos.base.v1beta1.Coin amount = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgUndelegateResponse {
+}
+
+message MsgUpdatePool {
+    string creator = 1;
+    string pool_address = 2;
+    string commission_rate = 3 [(gogoproto.nullable) = false, (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    string commission_address = 4;
+    string value_added_tax_address = 5;
+
+}
+
+message MsgUpdatePoolResponse {
+}
+
+message MsgCreatePool {
+    string creator = 1;
+    string pool_address = 2;
+    string commission_rate = 3 [(gogoproto.nullable) = false, (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    string commission_address = 4;
+    string value_added_tax_address = 5;
+}
+
+message MsgCreatePoolResponse {
+}
+
+
+message Pool {
+    string creator = 1;
+    string pool_address = 2;
+    string commission_rate = 3 [(gogoproto.nullable) = false, (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    string commission_address = 4;
+    string value_added_tax_address = 5;
+}
+

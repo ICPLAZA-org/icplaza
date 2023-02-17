@@ -1,0 +1,24 @@
+syntax = "proto3";
+package gauss.blindbox.v1;
+
+import "gogoproto/gogo.proto";
+import "gauss/blindbox/v1/params.proto";
+import "gauss/blindbox/v1/box.proto";
+import "gauss/blindbox/v1/group.proto";
+import "gauss/blindbox/v1/pool.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/gauss/gauss/v6/x/blindbox/types";
+
+// GenesisState defines the blindbox module's genesis state.
+message GenesisState {
+    Params params = 1 [(gogoproto.nullable) = false];
+    repeated Pool pools = 2;
+    repeated GroupBox group_boxes = 3;
+    // this line is used by starport scaffolding # genesis/proto/state
+}
+
+message GroupBox {
+    Group group = 1;
+    repeated Box boxes = 2;
+}

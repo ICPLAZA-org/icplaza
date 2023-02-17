@@ -1,0 +1,18 @@
+syntax = "proto3";
+package gauss.auction.v1;
+
+import "gogoproto/gogo.proto";
+import "gauss/auction/v1/params.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/auction/types";
+
+// GenesisState defines the auction module's genesis state.
+message GenesisState {
+    // this line is used by starport scaffolding # genesis/proto/state
+    // this line is used by starport scaffolding # ibc/genesis/proto
+    option (gogoproto.equal) = false;
+    option (gogoproto.goproto_getters) = false;
+
+    // params defines all the parameters for the nft module.
+    Params params = 1 [(gogoproto.nullable) = false];
+}

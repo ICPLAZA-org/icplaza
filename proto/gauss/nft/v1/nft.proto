@@ -1,0 +1,47 @@
+syntax = "proto3";
+package gauss.nft.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/nft/types";
+option (gogoproto.goproto_getters_all) = false;
+// Params defines the parameters for the liquidity module.
+message Params {
+    option (gogoproto.equal) = true;
+    option (gogoproto.goproto_stringer) = false;
+
+    // Fee paid to create a Liquidity Pool. Set a fee to prevent spamming.
+    repeated cosmos.base.v1beta1.Coin nft_creation_fee = 1 [
+        (gogoproto.moretags) = "yaml:\"nft_creation_fee\"",
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+    ];
+    // fee allot
+    string burn_percent = 2 [
+        (gogoproto.moretags) = "yaml:\"burn_percent\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable) = false
+    ];
+    string community_percent = 3 [
+        (gogoproto.moretags) = "yaml:\"community_percent\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable) = false
+    ];
+    string validators_percent = 4 [
+        (gogoproto.moretags) = "yaml:\"validators_percent\"",
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable) = false
+    ];
+
+}
+
+// 最后成交价格
+//message LastPrice {
+//    string token_id = 1;
+//    repeated cosmos.base.v1beta1.Coin coins = 2;
+//}
+message LastPrice {
+    string token_id = 1;
+    cosmos.base.v1beta1.Coin coin = 2;
+}

@@ -1,0 +1,23 @@
+syntax = "proto3";
+package gauss.auction.v1;
+
+import "google/protobuf/duration.proto";
+import "gogoproto/gogo.proto";
+import "gauss/auction/v1/tx.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/auction/types";
+
+message Params {
+    option (gogoproto.equal) = true;
+    option (gogoproto.goproto_stringer) = false;
+
+
+    // 自动成交间隔
+    google.protobuf.Duration auto_agree_period = 1 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdduration) = true,
+        (gogoproto.jsontag) = "auto_agree_period,omitempty",
+        (gogoproto.moretags) = "yaml:\"auto_agree_period\""
+    ];
+    repeated Order orders = 2;
+}

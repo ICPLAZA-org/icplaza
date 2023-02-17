@@ -1,0 +1,84 @@
+syntax = "proto3";
+package gauss.blindbox.v1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/gauss/gauss/v6/x/blindbox/types";
+
+// Msg defines the Msg service.
+service Msg {
+    rpc CreatePool(MsgCreatePool) returns (MsgCreatePoolResponse);
+    rpc UpdatePool(MsgUpdatePool) returns (MsgUpdatePoolResponse);
+    rpc RemovePool(MsgRemovePool) returns (MsgRemovePoolResponse);
+    rpc CreateBox(MsgCreateBox) returns (MsgCreateBoxResponse);
+    rpc RevokeBoxGroup(MsgRevokeBoxGroup) returns (MsgRevokeBoxGroupResponse);
+    rpc OpenBox(MsgOpenBox) returns (MsgOpenBoxResponse);
+    // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgCreatePool {
+    string creator = 1;
+    string fee_rate = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    string fee_address = 3;
+    string pool_id = 4;
+}
+
+message MsgCreatePoolResponse {
+}
+
+message MsgUpdatePool {
+    string creator = 1;
+    string fee_rate = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    string fee_address = 3;
+    string pool_id = 4;
+}
+
+message MsgUpdatePoolResponse {
+}
+
+message MsgRemovePool {
+    string creator = 1;
+    string pool_id = 2;
+}
+
+message MsgRemovePoolResponse {
+}
+
+message MsgCreateBox {
+    string creator = 1;
+    string group_id = 2;
+    uint64 box_size = 3;
+    cosmos.base.v1beta1.Coin box_price = 4;
+    google.protobuf.Timestamp start_time = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp end_time = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    uint64 random_min = 7;
+    uint64 random_max = 8;
+    repeated string random_nfts = 9;
+    repeated string fixed_nfts = 10;
+    string pool_id = 11;
+}
+
+message MsgCreateBoxResponse {
+}
+
+message MsgRevokeBoxGroup {
+    string creator = 1;
+    string group_id = 2;
+}
+
+message MsgRevokeBoxGroupResponse {
+}
+
+message MsgOpenBox {
+    string creator = 1;
+    string group_id = 2;
+    repeated string box_ids = 3;
+}
+
+message MsgOpenBoxResponse {
+}
+
+// this line is used by starport scaffolding # proto/tx/message

@@ -1,0 +1,17 @@
+syntax = "proto3";
+package gauss.validatordao.v1;
+
+import "gogoproto/gogo.proto";
+import "gauss/validator-dao/v1/params.proto";
+import "gauss/validator-dao/v1/dao.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/gauss/gauss/v6/x/validator-dao/types";
+
+// GenesisState defines the validatordao module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated AuthorizerBizs authorizer_bizs = 2 [(gogoproto.nullable) = false];
+  repeated GranteeBizs grantee_auth_bizs = 3 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

@@ -1,0 +1,113 @@
+syntax = "proto3";
+package gauss.auction.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "gogoproto/gogo.proto";
+import "gauss/nft/v1/tx.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/auction/types";
+
+// Msg defines the Msg service.
+service Msg {
+    rpc CreateOrder(MsgCreateOrder) returns (MsgCreateOrderResponse);
+    rpc DeleteOrder(MsgDeleteOrder) returns (MsgDeleteOrderResponse);
+    rpc BidOrder(MsgBidOrder) returns (MsgBidOrderResponse);
+
+}
+
+// create order
+message MsgCreateOrder {
+    string sender = 1;
+    string token_id = 2;
+    string pool_address = 3;
+    cosmos.base.v1beta1.Coin start_price = 4
+    [
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+        (gogoproto.moretags) = "yaml:\"start_price\""
+    ];
+
+    google.protobuf.Timestamp start_time = 5
+    [(gogoproto.stdtime) = true, (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"start_time\""];
+
+    google.protobuf.Timestamp end_time = 6
+    [(gogoproto.stdtime) = true, (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"end_time\""];
+
+    cosmos.base.v1beta1.Coin min_step = 7
+    [
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+        (gogoproto.moretags) = "yaml:\"min_step\""
+    ];
+    google.protobuf.Duration auto_agree_period = 8 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdduration) = true,
+        (gogoproto.jsontag) = "auto_agree_period,omitempty",
+        (gogoproto.moretags) = "yaml:\"auto_agree_period\""
+    ];
+}
+message MsgCreateOrderResponse {
+}
+
+// delete order
+message MsgDeleteOrder {
+    string creator = 1;
+    string token_id = 2;
+    string pool_address = 3;
+}
+
+message MsgDeleteOrderResponse {
+}
+
+
+message MsgBidOrder {
+    string sender = 1;
+    string token_id = 2;
+    cosmos.base.v1beta1.Coin price = 3;
+    string pool_address = 4;
+}
+
+message MsgBidOrderResponse {
+}
+
+
+message Order {
+    option (gogoproto.equal) = true;
+
+    string token_id = 1 [(gogoproto.moretags) = "yaml:\"token_id\""];
+    cosmos.base.v1beta1.Coin price = 2;
+    cosmos.base.v1beta1.Coin bid_price = 3
+    [
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+        (gogoproto.moretags) = "yaml:\"bid_price\""
+    ];
+    nft.v1.Nft nft = 4;
+    string bidder = 5;
+    google.protobuf.Timestamp start_time = 6
+    [(gogoproto.stdtime) = true, (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"start_time\""];
+    google.protobuf.Timestamp end_time = 7
+    [(gogoproto.stdtime) = true, (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"end_time\""];
+    google.protobuf.Timestamp min_end_time = 8
+    [(gogoproto.stdtime) = true, (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"min_end_time\""];
+    cosmos.base.v1beta1.Coin min_step = 9
+    [
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+        (gogoproto.moretags) = "yaml:\"min_step\""
+    ];
+    string pool_address = 10 [(gogoproto.moretags) = "yaml:\"pool_address\""];
+    google.protobuf.Duration auto_agree_period = 11 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdduration) = true,
+        (gogoproto.jsontag) = "auto_agree_period,omitempty",
+        (gogoproto.moretags) = "yaml:\"auto_agree_period\""
+    ];
+}
+
+
+message PoolAddress {
+    string address = 1;
+}

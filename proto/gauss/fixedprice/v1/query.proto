@@ -1,0 +1,38 @@
+syntax = "proto3";
+package gauss.fixedprice.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "google/api/annotations.proto";
+import "gogoproto/gogo.proto";
+import "gauss/fixedprice/v1/tx.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/fixedprice/types";
+
+// Query defines the gRPC querier service.
+service Query {
+    rpc Orders(QueryOrdersRequest) returns (QueryOrdersResponse) {
+        option (google.api.http).get = "/icplaza/fixedprice/orders";
+    }
+    rpc Order(QueryOrderRequest) returns (QueryOrderResponse) {
+        option (google.api.http).get = "/icplaza/fixedprice/order/{token_id}";
+    }
+}
+
+// this line is used by starport scaffolding # 3
+message QueryOrdersRequest {
+    string pool_address = 1 [(gogoproto.nullable) = true];
+    cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryOrdersResponse {
+    repeated Order orders = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryOrderRequest {
+    string token_id = 1;
+}
+
+message QueryOrderResponse {
+    Order order = 1;
+}

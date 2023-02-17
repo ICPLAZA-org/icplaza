@@ -1,0 +1,38 @@
+syntax = "proto3";
+package gauss.pool.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "google/api/annotations.proto";
+import "gauss/nftexpool/v1/tx.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/nftexpool/types";
+
+// Query defines the gRPC querier service.
+service Query {
+    rpc QDelegate(QueryDelegateRequest) returns (QueryDelegateResponse) {
+        option (google.api.http).get = "/icplaza/pool/delegate/{delegator}/{pool_address}";
+    }
+    rpc QPools(QueryPoolsRequest) returns (QueryPoolsResponse) {
+        option (google.api.http).get = "/icplaza/pool/pools";
+    }
+}
+
+// this line is used by starport scaffolding # 3
+message QueryDelegateRequest {
+    string delegator = 1;
+    string pool_address = 2;
+}
+
+message QueryDelegateResponse {
+    repeated cosmos.base.v1beta1.Coin coins = 1;
+}
+
+message QueryPoolsRequest {
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryPoolsResponse {
+    repeated Pool pools = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

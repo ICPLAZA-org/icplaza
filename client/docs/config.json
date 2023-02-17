@@ -1,0 +1,223 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Icplaza SDK - Legacy REST and gRPC Gateway docs",
+    "description": "A REST interface for state queries , legacy transactions",
+    "version": "1.0.0"
+  },
+  "apis": [
+    {
+      "url": "./client/docs/swagger_legacy.yaml",
+      "dereference": {
+        "circular": "ignore"
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/auth/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Account": "AuthAccount",
+          "Params": "AuthParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/authz/v1beta1/query.swagger.json"
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/bank/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Balance": "BankBalance",
+          "Params": "BankParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/distribution/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "DistributionParams",
+          "DelegatorValidators": "DistDelegatorValidators"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/feegrant/v1beta1/query.swagger.json"
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/evidence/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "EvidenceParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/gov/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "GovParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/slashing/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "SlashingParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/cosmos/staking/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "StakingParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/applications/transfer/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "TransferParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/core/client/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "ClientParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/core/connection/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "ConnectionParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ibc/core/channel/v1/query.swagger.json"
+    },
+    {
+      "url": "./tmp-swagger-gen/ethermint/evm/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "EvmParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/ethermint/feemarket/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "FeeMarketParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/gauss/claims/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "ClaimsParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/gauss/epochs/v1/query.swagger.json"
+    },
+    {
+      "url": "./tmp-swagger-gen/gauss/erc20/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "ERC20Params"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/gauss/incentives/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "IncentivesParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/gauss/inflation/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "InflationParams",
+          "TotalSupply": "InflationTotalSupply"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/gauss/vesting/v1/query.swagger.json"
+    },
+    {
+      "url": "./tmp-swagger-gen/gauss/recovery/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "RecoveryParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/gauss/auction/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Order": "AuctionOrder",
+          "Orders": "AuctionOrders",
+          "Params": "AuctionParams"
+        }
+      }
+   },
+   {
+      "url": "./tmp-swagger-gen/gauss/blindbox/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "BlindboxParams"
+        }
+      }
+   },
+   {
+      "url": "./tmp-swagger-gen/gauss/fixedprice/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Order": "FixedPriceOrder",
+          "Orders": "FixedPriceOrders",
+          "Params": "FixedPriceParams"
+        }
+      }
+   },
+   {
+      "url": "./tmp-swagger-gen/gauss/nft/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "NftParams"
+        }
+      }
+   },
+   {
+      "url": "./tmp-swagger-gen/gauss/nftexpool/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "NftExpoolParams"
+        }
+      }
+   },
+   {
+      "url": "./tmp-swagger-gen/gauss/validator-dao/v1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "ValidatorDaoParams"
+        }
+      }
+   }
+  ]
+}

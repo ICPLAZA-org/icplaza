@@ -1,0 +1,11 @@
+syntax = "proto3";
+package gauss.blindbox.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/blindbox/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+}

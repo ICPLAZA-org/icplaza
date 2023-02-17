@@ -1,0 +1,85 @@
+syntax = "proto3";
+package gauss.farm.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/farm/types";
+
+option (gogoproto.goproto_getters_all) = false;
+
+message FarmPool {
+  string name = 1;
+  string creator = 2;
+  string description = 3;
+  int64  start_height = 4;
+  int64  end_height = 5;
+  cosmos.base.v1beta1.Coin min_staking = 6 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+
+  string tokens = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+
+  repeated FarmRewardRule farm_reward_rules = 8 [(gogoproto.nullable) = false];
+  uint64 farmer_count = 9;
+}
+
+message FarmRewardRule {
+  cosmos.base.v1beta1.Coin total_rewards = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  string rewards_per_block = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message FarmersRewards {
+  int64  previous_height = 1;
+
+  repeated FarmersRewardEntity farmers_rewards = 2 [
+    (gogoproto.nullable) = false
+  ];
+  string pool_name = 3;
+}
+
+message FarmersRewardEntity {
+  cosmos.base.v1beta1.Coin remaining_rewards = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  string rewards_per_share = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message Farmer {
+  string farmer_address = 1;
+  string tokens = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+  string pool_name = 3;
+}
+
+message FarmerRewards {
+  repeated cosmos.base.v1beta1.Coin debts = 1 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.nullable) = false
+  ];
+  string farmer_address = 2;
+  string pool_name = 3;
+}
+message Params {
+  cosmos.base.v1beta1.Coin creating_pool_fee = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  uint32 max_reward_categories = 2;
+}

@@ -1,0 +1,104 @@
+syntax = "proto3";
+package gauss.blindbox.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gauss/blindbox/v1/params.proto";
+import "gauss/blindbox/v1/box.proto";
+import "gauss/blindbox/v1/group.proto";
+import "gauss/blindbox/v1/pool.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/gauss/gauss/v6/x/blindbox/types";
+
+// Query defines the gRPC querier service.
+service Query {
+    // Parameters queries the parameters of the module.
+    rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+        option (google.api.http).get = "/icplaza/blindbox/params";
+    }
+    // Queries a list of getpool_ids items.
+    rpc GetPools(QueryGetPoolsRequest) returns (QueryGetPoolsResponse) {
+        option (google.api.http).get = "/icplaza/blindbox/getPools";
+    }
+
+    // Queries a list of GetPool items.
+    rpc GetPool(QueryGetPoolRequest) returns (QueryGetPoolResponse) {
+        option (google.api.http).get = "/icplaza/blindbox/getPool/{pool_id}";
+    }
+
+    // Queries a list of getgroup_ids items.
+    rpc GetGroups(QueryGetGroupsRequest) returns (QueryGetGroupsResponse) {
+        option (google.api.http).get = "/icplaza/blindbox/getGroups/{pool_id}";
+    }
+
+    // Queries a list of GetGroup items.
+    rpc GetGroup(QueryGetGroupRequest) returns (QueryGetGroupResponse) {
+        option (google.api.http).get = "/icplaza/blindbox/getGroup/{group_id}";
+    }
+
+    // Queries a list of GetBox items.
+    rpc GetBox(QueryGetBoxRequest) returns (QueryGetBoxResponse) {
+        option (google.api.http).get = "/icplaza/blindbox/getBox/{group_id}/{box_id}";
+    }
+
+    // this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+    // params holds all the parameters of this module.
+    Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetPoolsRequest {
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryGetPoolsResponse {
+    repeated Pool pools = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetPoolRequest {
+    string pool_id = 1;
+}
+
+message QueryGetPoolResponse {
+    Pool pool = 1;
+}
+
+message QueryGetGroupsRequest {
+    string pool_id = 1;
+    cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryGetGroupsResponse {
+    repeated QueryGetGroupResponse groups = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetGroupRequest {
+    string group_id = 1;
+}
+
+message QueryGetGroupResponse {
+    Group group = 1;
+    repeated Box boxes = 2;
+}
+
+message QueryGetBoxRequest {
+    string group_id = 1;
+    string box_id = 2;
+}
+
+message QueryGetBoxResponse {
+    Box box = 1;
+    Group group = 2;
+}
+
+// this line is used by starport scaffolding # 3

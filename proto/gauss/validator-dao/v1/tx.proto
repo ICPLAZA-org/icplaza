@@ -1,0 +1,63 @@
+syntax = "proto3";
+package gauss.validatordao.v1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/gauss/gauss/v6/x/validator-dao/types";
+
+// Msg defines the Msg service.
+service Msg {
+    rpc ReqAuthorization(MsgReqAuthorization) returns (MsgReqAuthorizationResponse);
+    rpc WithdrawAuthorization(MsgWithdrawAuthorization) returns (MsgWithdrawAuthorizationResponse);
+    rpc AddAuthBiz(MsgAddAuthBiz) returns (MsgAddAuthBizResponse);
+    rpc UpdateAuthBiz(MsgUpdateAuthBiz) returns (MsgUpdateAuthBizResponse);
+    rpc RemoveAuthBiz(MsgRemoveAuthBiz) returns (MsgRemoveAuthBizResponse);
+    // this line is used by starport scaffolding # proto/tx/rpc
+}
+message MsgReqAuthorization {
+    string creator = 1;
+    string authorizer = 2;
+    string biz_name = 3;
+    cosmos.base.v1beta1.Coin fee = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgReqAuthorizationResponse {
+}
+
+message MsgWithdrawAuthorization {
+    string creator = 1;
+    string authorizer = 2;
+    string biz_name = 3;
+}
+message MsgWithdrawAuthorizationResponse {
+}
+
+message MsgAddAuthBiz {
+    string creator = 1;
+    string biz_name = 2;
+    cosmos.base.v1beta1.Coin fee = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgAddAuthBizResponse {
+}
+
+message MsgUpdateAuthBiz {
+    string creator = 1;
+    string biz_name = 2;
+    cosmos.base.v1beta1.Coin fee = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateAuthBizResponse {
+}
+
+message MsgRemoveAuthBiz {
+    string creator = 1;
+    string biz_name = 2;
+}
+
+message MsgRemoveAuthBizResponse {
+}
+
+// this line is used by starport scaffolding # proto/tx/message

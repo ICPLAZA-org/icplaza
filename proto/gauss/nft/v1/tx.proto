@@ -1,0 +1,131 @@
+syntax = "proto3";
+package gauss.nft.v1;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/nft/types";
+
+// Msg defines the Msg service.
+service Msg {
+    // this line is used by starport scaffolding # proto/tx/rpc
+    rpc MintBatch(MsgMintBatch) returns (MsgMintBatchResponse);
+    rpc FrozenNft(MsgFrozenNft) returns (MsgFrozenNftResponse);
+    rpc TransferNft(MsgTransferNft) returns (MsgTransferNftResponse);
+    rpc MintNft(MsgMintNft) returns (MsgMintNftResponse);
+}
+
+message MsgMintBatch {
+    string sender = 1;
+    string recipient = 2;
+    repeated MintBatchItem items = 3;
+}
+
+message MintBatchItem {
+    string token_id = 1;
+    string cate_id = 2;
+    string token_uri = 3;
+    string company_uri = 4;
+    string value_added_tax = 5 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    string copyright_tax = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    string name = 7;
+    repeated Component components = 8;
+}
+
+message MsgMintBatchResponse {
+}
+
+
+message MsgFrozenNft {
+    string sender = 1;
+    string cate_id = 2;
+    string token_id = 3;
+}
+
+message MsgFrozenNftResponse {
+}
+
+message MsgTransferNft {
+    string sender = 1;
+    string recipient = 2;
+    string cate_id = 3;
+    string token_id = 4;
+}
+
+message MsgTransferNftResponse {
+}
+
+message MsgMintNft {
+    string sender = 1;
+    string recipient = 2;
+    string token_id = 3;
+    string cate_id = 4;
+    string token_uri = 5;
+    string company_uri = 6;
+    string value_added_tax = 7 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    string copyright_tax = 8 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    string name = 9;
+    repeated Component components = 10;
+}
+
+message Nft {
+    option (gogoproto.equal) = true;
+    string token_id = 1;
+    string cate_id = 2;
+    string owner = 3;
+    string creator = 4;
+    string company_uri = 5;
+    string token_uri = 6;
+    string value_added_tax = 7 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    string copyright_tax = 8 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+    uint32 token_status = 9;
+    string name = 10;
+    repeated Component components = 11;
+}
+
+message Component {
+    option (gogoproto.equal) = true;
+    string class_id = 1;
+    uint64 min_amount = 2;
+    uint64 max_amount = 3;
+    uint64 type = 4;
+}
+
+message IDCollection {
+    option (gogoproto.equal) = true;
+
+    string cate_id = 1;
+    repeated string ids = 2;
+}
+
+message Owner {
+    option (gogoproto.equal) = true;
+
+    bytes address = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    repeated IDCollection id_collections = 2 [(gogoproto.moretags) = "yaml:\"ids\"", (gogoproto.customname) = "IDCollections", (gogoproto.nullable) = false];
+}
+
+message Cate {
+    string cate_id = 1;
+}
+
+message NfToken {
+    string token_id = 1;
+}
+
+message Collection {
+    option (gogoproto.equal) = true;
+
+    string cate_id = 1;
+    repeated Nft nfts = 2 [(gogoproto.customname) = "NFTs", (gogoproto.nullable) = false];
+}
+
+message MsgMintNftResponse {
+}
+
+// TransferedCNFT
+message TransferedCNFT {
+    string token_id = 1;
+    // 类型 0:普通转移;1:拍卖或者固态价格
+    uint64 type = 2;
+}

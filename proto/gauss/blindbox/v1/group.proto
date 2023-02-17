@@ -1,0 +1,29 @@
+syntax = "proto3";
+package gauss.blindbox.v1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/gauss/gauss/v6/x/blindbox/types";
+
+message Group {
+    string group_id = 1;
+    uint64 box_size = 2;
+    cosmos.base.v1beta1.Coin box_price = 3;
+    uint64 open_size = 4;
+    google.protobuf.Timestamp start_time = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp end_time = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    string creator = 7;
+    string pool_id = 8;
+    uint64 random_min = 9;
+    uint64 random_max = 10;
+    repeated string random_nfts = 11;
+    repeated string fixed_nfts = 12;
+    repeated string left_random_nfts = 13;
+    repeated string left_fixed_nfts = 14;
+}
+
+message PoolIdToGroupId {
+    string group_id = 1;
+}

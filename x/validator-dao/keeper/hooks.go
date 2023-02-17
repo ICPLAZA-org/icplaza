@@ -9,7 +9,7 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 
-	"github.com/icplaza/icplaza/v6/x/validator-dao/types"
+	"github.com/gauss/gauss/v6/x/validator-dao/types"
 )
 
 // Hooks wrapper struct
@@ -22,7 +22,7 @@ var (
 	_ evmtypes.EvmHooks = Hooks{}
 )
 
-// Create new dao hooks
+// Create new distribution hooks
 func (k Keeper) Hooks() Hooks { 
 	return Hooks{k} 
 }
@@ -44,7 +44,6 @@ func (h Hooks) PostTxProcessing(
 	receipt *ethtypes.Receipt,
 ) error {
 
-	// Only the contract deployment permission is concerned
 	if msg.To() != nil {
 		return nil
 	}

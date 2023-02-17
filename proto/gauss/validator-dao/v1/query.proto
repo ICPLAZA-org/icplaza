@@ -1,0 +1,54 @@
+syntax = "proto3";
+package gauss.validatordao.v1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "gauss/validator-dao/v1/params.proto";
+import "gauss/validator-dao/v1/dao.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/gauss/gauss/v6/x/validator-dao/types";
+
+// Query defines the gRPC querier service.
+service Query {
+    rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+        option (google.api.http).get = "/icplaza/validatordao/params";
+    }
+    // Queries a list of BizList items.
+    // 按验证人查询业务
+    rpc AuthorizerBizs(QueryAuthorizerBizsRequest) returns (QueryAuthorizerBizsResponse) {
+        option (google.api.http).get = "/icplaza/validatordao/auth_bizs/authorizer/{authorizer}";
+    }
+    rpc GranteeAuthBizs(QueryGranteeAuthBizsRequest) returns (QueryGranteeAuthBizsResponse) {
+        option (google.api.http).get = "/icplaza/validatordao/auth_bizs/grantee/{grantee}";
+    }
+    // this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+    // params holds all the parameters of this module.
+    Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAuthorizerBizsRequest {
+    string authorizer = 1;
+}
+
+message QueryAuthorizerBizsResponse {
+    repeated DaoBiz bizs = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGranteeAuthBizsRequest {
+    string grantee = 1;
+}
+
+message QueryGranteeAuthBizsResponse {
+    repeated AcqBiz bizs = 1 [(gogoproto.nullable) = false];
+}
+// this line is used by starport scaffolding # 3

@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/icplaza/icplaza/v6/x/validator-dao/types"
+	"github.com/gauss/gauss/v6/x/validator-dao/types"
 )
 
 // GetParams get all parameters as types.Params

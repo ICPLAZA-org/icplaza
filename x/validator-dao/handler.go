@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/icplaza/icplaza/v6/x/validator-dao/keeper"
-	"github.com/icplaza/icplaza/v6/x/validator-dao/types"
+	"github.com/gauss/gauss/v6/x/validator-dao/keeper"
+	"github.com/gauss/gauss/v6/x/validator-dao/types"
 )
 
 // NewHandler ...

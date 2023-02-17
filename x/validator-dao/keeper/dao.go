@@ -4,10 +4,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/icplaza/icplaza/v6/x/validator-dao/types"
+	"github.com/gauss/gauss/v6/x/validator-dao/types"
 )
 
-// ConsumeAuthorization pay for power
 func (k Keeper) ConsumeAuthorization(ctx sdk.Context, granteeAddr sdk.AccAddress, bizName string) (bool) {
 	rc := k.IsAuthorizer(ctx, granteeAddr)
 	if rc {
@@ -36,18 +35,20 @@ func (k Keeper) ConsumeAuthorization(ctx sdk.Context, granteeAddr sdk.AccAddress
 	return rc
 }
 
-// consumeAuthorization pay charges
 func (k Keeper) consumeAuthorization(ctx sdk.Context, authBiz *types.AcqBiz) (bool) {
 	rc := false
+
 	fee := authBiz.Price
 
 	count := authBiz.Amount.Amount.Quo(authBiz.Price.Amount)
 	if count.LT(sdk.OneInt()) {
 		return rc
 	}
+	if count.Equal(sdk.OneInt()) {
+		fee = authBiz.Amount
+	}
 	authBiz.Amount = authBiz.Amount.Sub(fee)
 
-	// pay charges
 	authorizerAddr, err := sdk.AccAddressFromBech32(authBiz.From)
 	if err != nil {
 		return rc
@@ -60,9 +61,8 @@ func (k Keeper) consumeAuthorization(ctx sdk.Context, authBiz *types.AcqBiz) (bo
 	return rc
 }
 
-// ReqAuthorization prepay fees to purchase permission at any time
 func (k Keeper) ReqAuthorization(ctx sdk.Context, granteeAddr, authorizerAddr sdk.AccAddress, bizName string, fee sdk.Coin) error {
-	// grantee can only purchase the same service to a certain validator once at the same time
+	// only once
 	granteeAuthBizs := k.GetGranteeAuthBizs(ctx, granteeAddr)
 	for _, authBiz := range granteeAuthBizs.Bizs {
 		if (bizName == authBiz.BizName) && (authorizerAddr.String() == authBiz.From) {
@@ -70,7 +70,7 @@ func (k Keeper) ReqAuthorization(ctx sdk.Context, granteeAddr, authorizerAddr sd
 		}
 	}
 	
-	// check: fees >= price
+	// fee
 	price := k.getAuthorizerBizPrice(ctx, authorizerAddr, bizName, fee.Denom)
 	if price.IsZero() {
 		return sdkerrors.Wrapf(types.ErrNoBizFound, "biz(%s) does not exist.", bizName)
@@ -79,43 +79,23 @@ func (k Keeper) ReqAuthorization(ctx sdk.Context, granteeAddr, authorizerAddr sd
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "got: %s, expect: %s", fee.String(), price.String())
 	}
 
-	// escrow to the module address
+	// send
 	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, granteeAddr, types.ModuleName, sdk.NewCoins(fee)); err != nil {
 		return err
 	}
 	
+	// authorize
 	granteeAuthBizs.Bizs = append(granteeAuthBizs.Bizs, types.NewAcqBiz(authorizerAddr.String(), bizName, fee, price))
 	k.SetGranteeAuthBizs(ctx, granteeAddr, granteeAuthBizs)
 
 	return nil
 }
 
-// WithdrawAuthorization withdraw grantee's escrow coins
+
 func (k Keeper) WithdrawAuthorization(ctx sdk.Context, granteeAddr, authorizerAddr sdk.AccAddress, bizName string) (sdk.Coin, error) {
-	err := nil
-	rc := sdk.NewCoin(sdk.DefaultBondDenom, sdk.ZeroInt())
-
-	granteeAuthBizs := k.GetGranteeAuthBizs(ctx, granteeAddr)
-	for i, authBiz := range granteeAuthBizs.Bizs {
-		if (bizName == authBiz.BizName) && (authorizerAddr.String() == authBiz.From) {
-			rc = authBiz.Amount
-
-			granteeAuthBizs.Bizs = append(granteeAuthBizs.Bizs[:i], granteeAuthBizs.Bizs[i+1:]...)
-			k.SetGranteeAuthBizs(ctx, granteeAddr, granteeAuthBizs)
-
-			break;
-		}
-	}
-
-	if rc.IsPositive() {
-		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, granteeAddr, sdk.NewCoins(rc))
-	}
-
-	return rc, err
+	return sdk.NewInt64Coin(sdk.DefaultBondDenom, 0), sdkerrors.Wrap(sdkerrors.ErrNotSupported, "Withdrawing authorization do not implement")
 }
 
-
-// AddAuthBiz add service into validator's service list
 func (k Keeper) AddAuthBiz(ctx sdk.Context, authorizerAddr sdk.AccAddress, bizName string, fee sdk.Coin) error {
 	if err := k.validateBiz(ctx, bizName, fee); err != nil {
 		return err
@@ -134,7 +114,6 @@ func (k Keeper) AddAuthBiz(ctx sdk.Context, authorizerAddr sdk.AccAddress, bizNa
 	return nil
 }
 
-// UpdateAuthBiz update price of the validator's service
 func (k Keeper) UpdateAuthBiz(ctx sdk.Context, authorizerAddr sdk.AccAddress, bizName string, fee sdk.Coin) error {
 	if err := k.validateBiz(ctx, bizName, fee); err != nil {
 		return err
@@ -158,7 +137,6 @@ func (k Keeper) UpdateAuthBiz(ctx sdk.Context, authorizerAddr sdk.AccAddress, bi
 	return nil
 }
 
-// RemoveAuthBiz remove service from validator's service list
 func (k Keeper) RemoveAuthBiz(ctx sdk.Context, authorizerAddr sdk.AccAddress, bizName string) error {
 	var found bool = false
 	authorizerBizs := k.GetAuthorizerBizs(ctx, authorizerAddr)
@@ -177,6 +155,78 @@ func (k Keeper) RemoveAuthBiz(ctx sdk.Context, authorizerAddr sdk.AccAddress, bi
 	}
 
 	return nil
+}
+
+func (k Keeper) SetAuthorizerBizs(ctx sdk.Context, authorizerAddr sdk.AccAddress, bizs types.AuthorizerBizs) {
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshal(&bizs)
+	store.Set(types.GetAuthorizerBizsKey(authorizerAddr), bz)
+}
+
+func (k Keeper) GetAuthorizerBizs(ctx sdk.Context, authorizerAddr sdk.AccAddress) (authorizerBizs types.AuthorizerBizs) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetAuthorizerBizsKey(authorizerAddr))
+	if bz == nil {
+		return types.AuthorizerBizs{}
+	}
+	k.cdc.Unmarshal(bz, &authorizerBizs)
+	return authorizerBizs
+}
+
+func (k Keeper) RemoveAuthorizerBizs(ctx sdk.Context, authorizerAddr sdk.AccAddress) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetAuthorizerBizsKey(authorizerAddr))
+}
+
+func (k Keeper) SetGranteeAuthBizs(ctx sdk.Context, granteeAddr sdk.AccAddress, granteeAuthBizs types.GranteeBizs) {
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshal(&granteeAuthBizs)
+	store.Set(types.GetGranteeAuthBizsKey(granteeAddr), bz)
+}
+
+func (k Keeper) GetGranteeAuthBizs(ctx sdk.Context, granteeAddr sdk.AccAddress) (granteeAuthBizs types.GranteeBizs) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetGranteeAuthBizsKey(granteeAddr))
+	if bz == nil {
+		return types.GranteeBizs{Grantee: granteeAddr.String()}
+	}
+	k.cdc.Unmarshal(bz, &granteeAuthBizs)
+	return granteeAuthBizs
+}
+
+func (k Keeper) removeGranteeAuthBizs(ctx sdk.Context, granteeAddr sdk.AccAddress) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetGranteeAuthBizsKey(granteeAddr))
+}
+
+func (k Keeper) GetAllAuthorizerBizs(ctx sdk.Context) []types.AuthorizerBizs {
+	var rc []types.AuthorizerBizs
+
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.AuthorizerBizsKey)
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var data types.AuthorizerBizs
+		k.cdc.MustUnmarshal(iterator.Value(), &data)
+		rc = append(rc, data)
+	}
+	return rc
+}
+
+func (k Keeper) GetAllGranteeAuthBizs(ctx sdk.Context) []types.GranteeBizs {
+	var rc []types.GranteeBizs
+
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.GranteeAuthBizsKey)
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var data types.GranteeBizs
+		k.cdc.MustUnmarshal(iterator.Value(), &data)
+		rc = append(rc, data)
+	}
+	return rc
 }
 
 func (k Keeper) validateBiz(ctx sdk.Context, bizName string, fee sdk.Coin) error {
@@ -203,7 +253,7 @@ func (k Keeper) validateBiz(ctx sdk.Context, bizName string, fee sdk.Coin) error
 	return nil
 }
 
-// getAuthorizerBizPrice return the price of a centain service from the validator price list or the network price list
+
 func (k Keeper) getAuthorizerBizPrice(ctx sdk.Context, authorizerAddr sdk.AccAddress, bizName, denom string) sdk.Coin {
 	var feeL sdk.Coin = sdk.NewCoin(denom, sdk.ZeroInt())
 	

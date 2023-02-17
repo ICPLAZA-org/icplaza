@@ -1,0 +1,31 @@
+syntax = "proto3";
+package gauss.validatordao.v1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/gauss/gauss/v6/x/validator-dao/types";
+
+message DaoBiz {
+  string name = 1;
+  cosmos.base.v1beta1.Coin fee = 2 [(gogoproto.nullable) = false];
+}
+
+message AuthorizerBizs {
+  string authorizer = 1;
+  repeated DaoBiz bizs = 2 [(gogoproto.nullable) = false];
+}
+
+message AcqBiz {
+  string from = 1;
+  string biz_name = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin price = 4 [(gogoproto.nullable) = false];
+}
+
+message GranteeBizs {
+  string grantee = 1;
+  repeated AcqBiz bizs = 2 [(gogoproto.nullable) = false];
+}
+// this line is used by starport scaffolding # proto/tx/message

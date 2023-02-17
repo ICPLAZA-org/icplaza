@@ -1,0 +1,8 @@
+1. 锁仓
+  lock-asset symbol amount --day-rate[month-rate] --from --to
+
+2. 释放
+  withdraw-asset symbol --from
+
+3. 查询
+  withdraw-asset symbol from
