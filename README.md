@@ -49,5 +49,5 @@ After the download is complete, directly replace the /data/chain/icplaza/data/da
 7. Start the node /data/chain/icplaza/ directory and execute:
 ```bash
 bin/icplazad --home=data start --pruning=default --json-rpc.api eth,txpool,personal,net,debug,web3 > log 2>&1 &
-```bash
+```
 
