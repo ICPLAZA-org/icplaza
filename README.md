@@ -19,7 +19,7 @@ make install
 ```
 1. Server recommended configuration:
 
-CPU: 4H; memory 8G; hard disk: 200G; system: centos7/ubuntu18
+CPU: 4H; memory 8G; hard disk: 200G ssd; system: centos7/ubuntu18
 
 2. Create the /data/chain/icplaza/bin directory:
 ```bash
