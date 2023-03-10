@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/gauss/gauss/v6/x/nft/types"
+	"github.com/evmos/evmos/v11/x/nft/types"
 )
 
 var _ = strconv.Itoa(0)

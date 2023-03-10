@@ -15,7 +15,7 @@ import (
 //	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/gauss/gauss/v6/x/token/types"
+	"github.com/evmos/evmos/v11/x/token/types"
 )
 
 var _ types.QueryServer = BaseKeeper{}

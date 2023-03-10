@@ -7,7 +7,7 @@ import (
 	"github.com/evmos/ethermint/tests"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 
-	"github.com/gauss/gauss/v6/x/erc20/types"
+	"github.com/evmos/evmos/v11/x/erc20/types"
 )
 
 func (suite *KeeperTestSuite) TestGetTokenPairs() {
@@ -117,7 +117,7 @@ func (suite *KeeperTestSuite) TestDeleteTokenPair() {
 		{"pair not found", []byte{}, func() {}, false},
 		{"valid id", id, func() {}, true},
 		{
-			"detete tokenpair",
+			"delete tokenpair",
 			id,
 			func() {
 				suite.app.Erc20Keeper.DeleteTokenPair(suite.ctx, pair)

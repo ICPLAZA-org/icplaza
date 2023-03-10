@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 
-	"github.com/gauss/gauss/v6/x/token/types"
+	"github.com/evmos/evmos/v11/x/token/types"
 )
 
 // NewTxCmd returns the transaction commands for the token module.

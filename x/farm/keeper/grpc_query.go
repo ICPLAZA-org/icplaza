@@ -10,7 +10,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/gauss/gauss/v6/x/farm/types"
+	"github.com/evmos/evmos/v11/x/farm/types"
 )
 
 var _ types.QueryServer = Keeper{}

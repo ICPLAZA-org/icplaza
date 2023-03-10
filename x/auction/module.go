@@ -17,9 +17,9 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/gauss/gauss/v6/x/auction/client/cli"
-	"github.com/gauss/gauss/v6/x/auction/keeper"
-	"github.com/gauss/gauss/v6/x/auction/types"
+	"github.com/evmos/evmos/v11/x/auction/client/cli"
+	"github.com/evmos/evmos/v11/x/auction/keeper"
+	"github.com/evmos/evmos/v11/x/auction/types"
 )
 
 var (

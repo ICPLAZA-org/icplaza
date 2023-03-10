@@ -19,8 +19,8 @@ import (
 
 	evm "github.com/evmos/ethermint/x/evm/types"
 
-	"github.com/gauss/gauss/v6/app"
-	"github.com/gauss/gauss/v6/x/epochs/types"
+	"github.com/evmos/evmos/v11/app"
+	"github.com/evmos/evmos/v11/x/epochs/types"
 )
 
 var denomMint = evm.DefaultEVMDenom

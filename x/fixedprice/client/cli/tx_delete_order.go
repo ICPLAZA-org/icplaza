@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/gauss/gauss/v6/x/fixedprice/types"
+	"github.com/evmos/evmos/v11/x/fixedprice/types"
 	"github.com/spf13/cobra"
 	"strconv"
 

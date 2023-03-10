@@ -2,18 +2,20 @@ package keeper
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/gauss/gauss/v6/x/nft/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/evmos/evmos/v11/x/nft/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
 type (
 	Keeper struct {
 		cdc         codec.BinaryCodec
-		storeKey    sdk.StoreKey
-		memKey      sdk.StoreKey
+		storeKey    storetypes.StoreKey
+		memKey      storetypes.StoreKey
 		bankKeeper  types.BankKeeper
 		distrKeeper types.DistributionKeeper
 		// this line is used by starport scaffolding # ibc/keeper/attribute
@@ -25,7 +27,7 @@ type (
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
-	memKey sdk.StoreKey,
+	memKey storetypes.StoreKey,
 	bankKeeper types.BankKeeper,
 	distrKeeper types.DistributionKeeper,
 	accountKeeper types.AccountKeeper,

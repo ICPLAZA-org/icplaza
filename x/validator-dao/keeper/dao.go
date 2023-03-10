@@ -4,10 +4,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/gauss/gauss/v6/x/validator-dao/types"
+	"github.com/evmos/evmos/v11/x/validator-dao/types"
 )
 
-func (k Keeper) ConsumeAuthorization(ctx sdk.Context, granteeAddr sdk.AccAddress, bizName string) (bool) {
+func (k Keeper) ConsumeAuthorization(ctx sdk.Context, granteeAddr sdk.AccAddress, bizName string) bool {
 	rc := k.IsAuthorizer(ctx, granteeAddr)
 	if rc {
 		return rc
@@ -28,7 +28,7 @@ func (k Keeper) ConsumeAuthorization(ctx sdk.Context, granteeAddr sdk.AccAddress
 				granteeAuthBizs.Bizs[i].Amount = authBiz.Amount
 			}
 			k.SetGranteeAuthBizs(ctx, granteeAddr, granteeAuthBizs)
-			break;
+			break
 		}	
 	}
 

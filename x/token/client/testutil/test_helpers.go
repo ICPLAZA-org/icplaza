@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 
-	tokencli "github.com/gauss/gauss/v6/x/token/client/cli"
+	tokencli "github.com/evmos/evmos/v11/x/token/client/cli"
 )
 
 func IssueTokenExec(clientCtx client.Context, from string, extraArgs ...string) (testutil.BufferWriter, error) {

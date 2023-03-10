@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/gauss/gauss/v6/x/auction/types"
+	"github.com/evmos/evmos/v11/x/auction/types"
 )
 
 func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {

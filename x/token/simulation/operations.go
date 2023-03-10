@@ -14,8 +14,8 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/gauss/gauss/v6/x/token/keeper"
-	"github.com/gauss/gauss/v6/x/token/types"
+	"github.com/evmos/evmos/v11/x/token/keeper"
+	"github.com/evmos/evmos/v11/x/token/types"
 )
 
 // Simulation operation weights constants

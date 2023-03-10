@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/gauss/gauss/v6/x/farm/types"
+	"github.com/evmos/evmos/v11/x/farm/types"
 )
 
 // Stake is responsible for the user to mortgage the lp token to the system and get back the reward accumulated before then

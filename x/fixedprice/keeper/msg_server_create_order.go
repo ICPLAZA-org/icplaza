@@ -4,7 +4,7 @@ import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/gauss/gauss/v6/x/fixedprice/types"
+	"github.com/evmos/evmos/v11/x/fixedprice/types"
 )
 
 func (k msgServer) CreateOrder(goCtx context.Context, msg *types.MsgCreateOrder) (*types.MsgCreateOrderResponse, error) {

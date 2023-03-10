@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/gauss/gauss/v6/x/token/types"
+	"github.com/evmos/evmos/v11/x/token/types"
 )
 
 func (suite *KeeperTestSuite) TestGRPCQueryToken() {

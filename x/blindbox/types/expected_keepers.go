@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	nfttype "github.com/gauss/gauss/v6/x/nft/types"
+	nfttype "github.com/evmos/evmos/v11/x/nft/types"
 )
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)

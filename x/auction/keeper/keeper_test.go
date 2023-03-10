@@ -3,7 +3,7 @@ package keeper
 import (
 	"testing"
 
-	"github.com/gauss/gauss/v6/x/auction/types"
+	"github.com/evmos/evmos/v11/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"

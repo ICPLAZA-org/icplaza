@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/gauss/gauss/v6/x/nftexpool/client/cli"
-	"github.com/gauss/gauss/v6/x/nftexpool/keeper"
-	"github.com/gauss/gauss/v6/x/nftexpool/types"
+	"github.com/evmos/evmos/v11/x/nftexpool/client/cli"
+	"github.com/evmos/evmos/v11/x/nftexpool/keeper"
+	"github.com/evmos/evmos/v11/x/nftexpool/types"
 
 	// this line is used by starport scaffolding # 1
 

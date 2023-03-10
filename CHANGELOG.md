@@ -35,7 +35,195 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
+## [v11.0.2] - 2023-02-10
+
+### Improvements
+
+- (deps) [#1370](https://github.com/evmos/evmos/pull/1370) Bump Cosmos SDK version to [`v0.46.9-ledger`](https://github.com/evmos/cosmos-sdk/releases/tag/v0.46.9-ledger)
+- (deps) [#1370](https://github.com/evmos/evmos/pull/1370) Bump Tendermint version to [`v0.34.26`](https://github.com/informalsystems/tendermint/releases/tag/v0.34.26)
+- (deps) [#1374](https://github.com/evmos/evmos/pull/1374) Bump Gin version to [`v1.7.7`](github.com/gin-gonic/gin/releases/tag/v1.7.7)
+- (ante) [#1382](https://github.com/evmos/evmos/pull/1382) Add `AnteHandler` decorator for `x/authz` messages
+
+## [v11.0.1] - 2023-02-04
+
+### Improvements
+
+- (fix)[#1248](https://github.com/evmos/evmos/pull/1248) Use the Informal Systems Tendermint fork
+
+### Bug Fixes
+
+- (deps) [#1342](https://github.com/evmos/evmos/pull/1342) Bump `tendermint` to [`v0.34.25`](https://github.com/informalsystems/tendermint/releases/tag/v0.34.25)
+
+## [v11.0.0] - 2023-01-27
+
+### State Machine Breaking
+
+- (deps) [#1288](https://github.com/evmos/evmos/pull/1288) Bump `ethermint` to [`v0.21.0`](https://github.com/evmos/ethermint/releases/v0.21.0)
+- (ica) [#1101](https://github.com/evmos/evmos/pull/1101) Add ICA host submodule
+- (inflation) [#1210](https://github.com/evmos/evmos/pull/1210) Delete `EpochMintProvision` from `KVStore` in a migration
+- (deps) [\#1196](https://github.com/evmos/evmos/pull/1196) Bump `ibc-go` to [`v6.1.0`](https://github.com/cosmos/ibc-go/releases/tag/v6.1.0)
+- (inflation) [#1193](https://github.com/evmos/evmos/pull/1193) Remove `EpochMintProvision` setters and getters to calculate on the fly
+- (erc20) [#1100](https://github.com/evmos/evmos/pull/1100) Deprecate usage of `x/params` in `x/erc20`
+- (inflation) [#1107](https://github.com/evmos/evmos/pull/1107) Deprecate usage of `x/params` in `x/inflation`
+- (incentives) [#1130](https://github.com/evmos/evmos/pull/1130) Deprecate usage of `x/params` in `x/incentives`
+- (claims) [#1125](https://github.com/evmos/evmos/pull/1125) Deprecate usage of `x/params` in `x/claims`
+- (revenue) [#1129](https://github.com/evmos/evmos/pull/1129) Deprecate usage of `x/params` in `x/revenue`
+
+### Features
+
+- (upgrade) [#1209](https://github.com/evmos/evmos/pull/1209) Incentivized testnet reward distribution logic.
+
+### Improvements
+
+- (deps) [#1279](https://github.com/evmos/evmos/pull/1279) Bump Cosmos SDK version to [`v0.46.8-ledger`](https://github.com/evmos/cosmos-sdk/releases/tag/v0.46.8-ledger)
+- (inflation) [#1258](https://github.com/evmos/evmos/pull/1258) Remove unnecessary `Coin` validation and store calls for `Params`
+
+### Bug Fixes
+
+- (app) [#1276](https://github.com/evmos/evmos/pull/1276) Fix store uploader for `x/recovery` module.
+- (inflation) [#1259](https://github.com/evmos/evmos/pull/1259) Re-add missing key to not disrupt order in store
+- (upgrade) [#1257](https://github.com/evmos/evmos/pull/1257) Add `recovery` module store to `StoreUpgrades`
+- (upgrade) [#1252](https://github.com/evmos/evmos/pull/1252) Add account number and sequence to migrated IBC transfer escrow accounts.
+- (upgrade) [#1242](https://github.com/evmos/evmos/pull/1242) Fix Ethermint params upgrade
+- (ibc) [#1156](https://github.com/evmos/evmos/pull/1156) Migrate IBC transfer escrow accounts to `ModuleAccount` type.
+- (upgrade) [#1252](https://github.com/evmos/evmos/pull/1252) Add account number and sequence to migrated IBC transfer escrow accounts.
+
+## [v10.0.1] - 2023-01-03
+
+### Improvements
+
+- (deps) [#1201](https://github.com/evmos/evmos/pull/1201) Bump `ics23/go` to v0.9.0
+
+## [v10.0.0] - 2022-12-28
+
+### State Machine Breaking
+
+- (deps) [#1184](https://github.com/evmos/evmos/pull/1184) Bump Ethermint version to [`v0.20.0-rc5`](https://github.com/evmos/ethermint/releases/tag/v0.20.0-rc5)
+- (deps) [\#1176](https://github.com/evmos/evmos/pull/1176) Bump `ibc-go` to [`v5.2.0`](https://github.com/cosmos/ibc-go/releases/tag/v5.2.0)
+- (vesting) [\#1070](https://github.com/evmos/evmos/pull/1070) Add Amino encoding support to the vesting module for EIP-712 signing.
+- (ante) [#1054](https://github.com/evmos/evmos/pull/1054) Remove validator commission `AnteHandler` decorator and replace it with the new `MinCommissionRate` staking parameter.
+- (deps) [\#1041](https://github.com/evmos/evmos/pull/1041) Add ICS-23 dragon-berry replace in `go.mod` as mentioned in the [Cosmos SDK release](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.4)
+
+### API Breaking
+
+- (erc20) [\#914](https://github.com/evmos/evmos/pull/914) Support registering multiple assets on `RegisterCoinProposal` and `RegisterERC20Proposal`
+
+### Features
+
+- (app) [\#1114](https://github.com/evmos/evmos/pull/1114) Add default File store listener for application from [ADR38](https://docs.cosmos.network/v0.47/architecture/adr-038-state-listening)
+- (transfer, erc20) [\#1085](https://github.com/evmos/evmos/pull/1085) Added wrapper for ICS-20 `transfer` to automatically convert ERC-20 tokens to native Cosmos coins.
+
+### Improvements
+
+- (deps) [\#1176](https://github.com/evmos/evmos/pull/1176) Bump Cosmos SDK to [`v0.46.7`](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.7)
+- (ci) [#1138](https://github.com/evmos/evmos/pull/1138) Add Golang dependency vulnerability checker.
+- (docs) [\#1090](https://github.com/evmos/evmos/pull/1090) Add audits page to documentation.
+- (vesting) [\#1087](https://github.com/evmos/evmos/pull/1087) Add new `MsgUpdateVestingFunder` that updates the `Funder` field of a given clawback vesting account
+- (ibc) [\#1081](https://github.com/evmos/evmos/pull/1081) Added utils functions for ibc denoms.
+- (erc20) [\#1059](https://github.com/evmos/evmos/pull/1059) Add util functions (iterator and params) for ERC20 module.
+- (go) [\#1039](https://github.com/evmos/evmos/pull/1039) Bump go v1.19
+- (test) [#1028](https://github.com/evmos/evmos/pull/1028) Add node upgrade end-to-end test suite.
+- (cmd) [\#1027](https://github.com/evmos/evmos/pull/1027) Apply Google CLI Syntax for required and optional args.
+- (ante) [\#993](https://github.com/evmos/evmos/pull/993) Re-order AnteHandlers for better performance
+- (docs) [\#985](https://github.com/evmos/evmos/pull/985) Specify repo branch name on markdown-link-check configuration.
+- (docs) [\#883](https://github.com/evmos/evmos/pull/883) Add Ethereum tx indexer documentation.
+- (docs) [\#980](https://github.com/evmos/evmos/pull/980) Fix documentation links to cosmos-sdk docs.
+- (cmd) [\#974](https://github.com/evmos/evmos/pull/974) Add `prune` command.
+- (cli) [#816](https://github.com/evmos/evmos/pull/816) Add Ledger CLI support.
+
+### Bug Fixes
+
+- (app) [#1165](https://github.com/evmos/evmos/pull/1165) Update Ledger supported algorithms to only consist of `EthSecp256k1`
+- (cmd) [#1172](https://github.com/evmos/evmos/pull/1172) Update default node snapshot interval to `5000`
+- (cmd) [\#1121](https://github.com/evmos/evmos/pull/1121) Fix `evmosd version` to show either tag or last commit.
+- (cmd) [\#1120](https://github.com/evmos/evmos/pull/1120) Fix snapshot configuration
+- (app) [\#1118](https://github.com/evmos/evmos/pull/1118) Setup gRPC node service with the application.
+- (analytics) [\#1094](https://github.com/evmos/evmos/pull/1094) Fix unbound metrics and remove labels that keep increasing.
+
+## [v9.1.0] - 2022-10-25
+
+### Improvements
+
+- (deps) [\#1011](https://github.com/evmos/evmos/pull/1011) Bump Cosmos SDK to [`v0.45.10`](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.10)
+
+## [v9.0.0] - 2022-10-21
+
+### Bug Fixes
+
+- (claims) [#951](https://github.com/evmos/evmos/pull/951) Fix ClawbackEmptyAccounts logic
+
+## [v8.2.3] - 2022-10-15
+
+### Improvements
+
+- (cmd) [#988](https://github.com/evmos/evmos/pull/988) Set IAVL config
+- (cli) [#971](https://github.com/evmos/evmos/pull/971) Add `prune` command.
+
+## [v8.2.2] - 2022-10-14
+
+### Improvements
+
+- (deps)[#965](https://github.com/evmos/evmos/pull/965) Bump SDK to v0.45.9 and Ethermint to v0.19.3
+
+## [v8.2.0] - 2022-09-23
+
+### State Machine Breaking
+
+- (app) [\#918](https://github.com/evmos/evmos/pull/918) Fix unregistered `revenue` module for `v8.1.0` store upgrade
+
+### Bug Fixes
+
+- (app,docs) [\#933](https://github.com/evmos/evmos/pull/933) Replace invalid linux `x86_64` [architecture](https://go.dev/doc/install/source#environment) to `amd64`.
+
+## [v8.1.1] - 2022-09-23
+
+### Bug Fixes
+
+- (app) [\#922](https://github.com/evmos/evmos/pull/922) Add hard fork logic for `v8.2.0`
+
+## [v8.1.0] - 2022-08-30
+
+### State Machine Breaking
+
+- (revenue) [\#859](https://github.com/evmos/evmos/pull/859) Add amino codecs to `x/revenue` module to support EIP-712 signatures.
+- (deps) Bump Ethermint version to [`v0.19.2`](https://github.com/evmos/ethermint/releases/tag/v0.19.2)
+
+## [v8.0.0] - 2022-08-16
+
+### State Machine Breaking
+
+- (deps) [\#845](https://github.com/evmos/evmos/pull/845) Bump Ethermint version to [`v0.19.0`](https://github.com/evmos/ethermint/releases/tag/v0.19.0)
+- (revenue) Add `x/revenue` module
+
+### Improvements
+
+- (deps) [\#839](https://github.com/evmos/evmos/pull/839) Bump ibc-go to [`v3.2.0`](https://github.com/cosmos/ibc-go/releases/tag/v3.2.0) and Cosmos SDK to [`v0.45.7`](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.7).
+- (build) [\#725](https://github.com/evmos/evmos/pull/725) Migrate Protobuf code generator to [Protobuf Workspaces](https://docs.buf.build/reference/workspaces)
+
+### Bug Fixes
+
+- (build) [\#856](https://github.com/evmos/evmos/pull/856) Update docker base image to use golang:1.18.5-bullseye and expose other relevant ports
+
+## [v7.0.0] - 2022-08-04
+
+### State Machine Breaking
+
+- (deps) Bump Ethermint version to [`v0.18.0`](https://github.com/evmos/ethermint/releases/tag/v0.18.0)
+
+### Bug Fixes
+
+- (app) [\#760](https://github.com/evmos/evmos/pull/760) Migrate inaccessible balance of testnet faucet account to new address
+- (inflation) [\#748](https://github.com/evmos/evmos/pull/748) Remove overcounted epochs from `skippedEpochs` value in store
+
+## [v6.0.3] - 2022-07-26
+
+### Bug Fixes
+
+- (deps) [\#803](https://github.com/evmos/evmos/pull/803) Bump Ethermint version to [`v0.17.2`](https://github.com/evmos/ethermint/releases/tag/v0.17.2)
+
 ## [v6.0.2] - 2022-07-13
+
+### Bug Fixes
 
 - (deps) [\#769](https://github.com/evmos/evmos/pull/769) Bump Ethermint version to [`v0.17.1`](https://github.com/evmos/ethermint/releases/tag/v0.17.1)
 
@@ -54,13 +242,14 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### API Breaking
 
 - (all) [\#701](https://github.com/evmos/evmos/pull/703) Rename Go module to `evmos/evmos`
-- (fees) [\#691](https://github.com/evmos/evmos/pull/691) Internal API audit.
 
 ### Improvements
 
 - (deps) [\#714](https://github.com/evmos/evmos/pull/714) Bump Go version to `1.18`.
 - (cmd) [\#696](https://github.com/evmos/evmos/pull/696) Set a custom tendermint node configuration on initialization.
-- (fees) [\#685](https://github.com/evmos/evmos/pull/685) Internal Specification audit.
+- (revenue) [\#685](https://github.com/evmos/evmos/pull/685) Internal Specification audit.
+- (revenue) [\#691](https://github.com/evmos/evmos/pull/691) Internal API audit.
+- (revenue) [\#715](https://github.com/evmos/evmos/pull/715) Internal state machine audit.
 
 ## [v5.0.0] - 2022-06-14
 
@@ -89,7 +278,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 - (app) [\#682](https://github.com/evmos/evmos/pull/682) Fix Tendermint consensus params (Evidence `MaxAgeNumBlocks` and `MaxAgeDuration`)
 - (incentives) [\#656](https://github.com/evmos/evmos/pull/656) Fix incentives that were previously only allocated to `EthAccount`s.
-- (fees) [\#612](https://github.com/evmos/evmos/pull/612) Fix fees registration cli command and description
+- (revenue) [\#612](https://github.com/evmos/evmos/pull/612) Fix fees registration cli command and description
 - (inflation) [\#554](https://github.com/evmos/evmos/pull/554) Changing erroneous epoch skips to `daily` instead of `weekly`
 - (claims) [\#626](https://github.com/evmos/evmos/pull/626) fix durations denominated in `nanoseconds`
 - (epochs) [\#629](https://github.com/evmos/evmos/pull/629) fix epochs durations denominated in `nanoseconds`

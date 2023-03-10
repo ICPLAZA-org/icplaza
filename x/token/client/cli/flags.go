@@ -3,7 +3,7 @@ package cli
 import (
 	flag "github.com/spf13/pflag"
 
-	"github.com/gauss/gauss/v6/x/token/types"
+	"github.com/evmos/evmos/v11/x/token/types"
 )
 
 const (

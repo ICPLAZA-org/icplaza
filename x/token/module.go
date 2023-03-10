@@ -19,10 +19,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/gauss/gauss/v6/x/token/client/cli"
-	"github.com/gauss/gauss/v6/x/token/keeper"
-	"github.com/gauss/gauss/v6/x/token/simulation"
-	"github.com/gauss/gauss/v6/x/token/types"
+	"github.com/evmos/evmos/v11/x/token/client/cli"
+	"github.com/evmos/evmos/v11/x/token/keeper"
+	"github.com/evmos/evmos/v11/x/token/simulation"
+	"github.com/evmos/evmos/v11/x/token/types"
 	
 )
 

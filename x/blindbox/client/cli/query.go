@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	"github.com/gauss/gauss/v6/x/blindbox/types"
+	"github.com/evmos/evmos/v11/x/blindbox/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

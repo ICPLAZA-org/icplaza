@@ -8,15 +8,15 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	ibcgotesting "github.com/cosmos/ibc-go/v3/testing"
+	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
+	ibcgotesting "github.com/cosmos/ibc-go/v6/testing"
 
 	"github.com/evmos/ethermint/tests"
-	"github.com/gauss/gauss/v6/app"
-	ibctesting "github.com/gauss/gauss/v6/ibc/testing"
-	"github.com/gauss/gauss/v6/testutil"
-	"github.com/gauss/gauss/v6/x/claims/types"
+	"github.com/evmos/evmos/v11/app"
+	ibctesting "github.com/evmos/evmos/v11/ibc/testing"
+	"github.com/evmos/evmos/v11/testutil"
+	"github.com/evmos/evmos/v11/x/claims/types"
 )
 
 type IBCTestingSuite struct {
@@ -46,12 +46,12 @@ func (suite *IBCTestingSuite) SetupTest() {
 	addr := sdk.AccAddress(tests.GenerateAddress().Bytes())
 	coins := sdk.NewCoins(sdk.NewCoin("aevmos", sdk.NewInt(10000)))
 
-	err := testutil.FundModuleAccount(suite.chainB.App.(*app.Evmos).BankKeeper, suite.chainB.GetContext(), types.ModuleName, coins)
+	err := testutil.FundModuleAccount(suite.chainB.GetContext(), suite.chainB.App.(*app.Evmos).BankKeeper, types.ModuleName, coins)
 	suite.Require().NoError(err)
 
 	suite.chainB.App.(*app.Evmos).ClaimsKeeper.SetClaimsRecord(suite.chainB.GetContext(), addr, claimsRecord)
 
-	err = testutil.FundModuleAccount(suite.chainA.App.(*app.Evmos).BankKeeper, suite.chainA.GetContext(), types.ModuleName, coins)
+	err = testutil.FundModuleAccount(suite.chainA.GetContext(), suite.chainA.App.(*app.Evmos).BankKeeper, types.ModuleName, coins)
 	suite.Require().NoError(err)
 
 	suite.chainA.App.(*app.Evmos).ClaimsKeeper.SetClaimsRecord(suite.chainA.GetContext(), addr, claimsRecord)
@@ -121,7 +121,7 @@ func (suite *IBCTestingSuite) TestOnAcknowledgementPacketIBC() {
 
 				suite.chainA.App.(*app.Evmos).ClaimsKeeper.SetClaimsRecord(suite.chainA.GetContext(), senderAddr, types.NewClaimsRecord(amt))
 				// update the escrowed account balance to maintain the invariant
-				err := testutil.FundModuleAccount(suite.chainA.App.(*app.Evmos).BankKeeper, suite.chainA.GetContext(), types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.chainA.GetContext(), suite.chainA.App.(*app.Evmos).BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 			},
 			4,
@@ -132,13 +132,8 @@ func (suite *IBCTestingSuite) TestOnAcknowledgementPacketIBC() {
 			"correct execution - Claimed transfer",
 			func(claimableAmount int64) {
 				amt := sdk.NewInt(claimableAmount)
-				coins := sdk.NewCoins(sdk.NewCoin("aevmos", amt))
 
 				suite.chainA.App.(*app.Evmos).ClaimsKeeper.SetClaimsRecord(suite.chainA.GetContext(), senderAddr, types.ClaimsRecord{InitialClaimableAmount: amt, ActionsCompleted: []bool{true, true, true, true}})
-
-				// update the escrowed account balance to maintain the invariant
-				err := testutil.FundModuleAccount(suite.chainA.App.(*app.Evmos).BankKeeper, suite.chainA.GetContext(), types.ModuleName, coins)
-				suite.Require().NoError(err)
 			},
 			4,
 			0,
@@ -152,12 +147,16 @@ func (suite *IBCTestingSuite) TestOnAcknowledgementPacketIBC() {
 
 			tc.malleate(tc.claimableAmount)
 
-			transfer := transfertypes.NewFungibleTokenPacketData("aevmos", "100", sender, receiver)
+			transfer := transfertypes.NewFungibleTokenPacketData("aevmos", "100", sender, receiver, "")
 			bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 			packet := channeltypes.NewPacket(bz, 1, path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, path.EndpointB.ChannelConfig.PortID, path.EndpointB.ChannelID, timeoutHeight, 0)
 
 			// send on endpointA
-			err := path.EndpointA.SendPacket(packet)
+			_, err := path.EndpointA.SendPacket(
+				packet.TimeoutHeight,
+				packet.TimeoutTimestamp,
+				packet.Data,
+			)
 			suite.Require().NoError(err)
 
 			// receive on endpointB
@@ -215,7 +214,7 @@ func (suite *IBCTestingSuite) TestOnRecvPacketIBC() {
 
 				suite.chainB.App.(*app.Evmos).ClaimsKeeper.SetClaimsRecord(suite.chainB.GetContext(), senderAddr, types.ClaimsRecord{InitialClaimableAmount: amt, ActionsCompleted: []bool{false, true, true, true}})
 				// update the escrowed account balance to maintain the invariant
-				err := testutil.FundModuleAccount(suite.chainB.App.(*app.Evmos).BankKeeper, suite.chainB.GetContext(), types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.chainB.GetContext(), suite.chainB.App.(*app.Evmos).BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 			},
 			func() {
@@ -237,7 +236,7 @@ func (suite *IBCTestingSuite) TestOnRecvPacketIBC() {
 				suite.chainB.App.(*app.Evmos).ClaimsKeeper.SetClaimsRecord(suite.chainB.GetContext(), receiverAddr, types.ClaimsRecord{InitialClaimableAmount: amt, ActionsCompleted: []bool{true, true, true, false}})
 
 				// update the escrowed account balance to maintain the invariant
-				err := testutil.FundModuleAccount(suite.chainB.App.(*app.Evmos).BankKeeper, suite.chainB.GetContext(), types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.chainB.GetContext(), suite.chainB.App.(*app.Evmos).BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 			},
 			func() {
@@ -259,7 +258,7 @@ func (suite *IBCTestingSuite) TestOnRecvPacketIBC() {
 				suite.chainB.App.(*app.Evmos).ClaimsKeeper.SetClaimsRecord(suite.chainB.GetContext(), receiverAddr, types.ClaimsRecord{InitialClaimableAmount: amt, ActionsCompleted: []bool{false, true, true, false}})
 
 				// update the escrowed account balance to maintain the invariant
-				err := testutil.FundModuleAccount(suite.chainB.App.(*app.Evmos).BankKeeper, suite.chainB.GetContext(), types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.chainB.GetContext(), suite.chainB.App.(*app.Evmos).BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 			},
 			func() {
@@ -282,7 +281,7 @@ func (suite *IBCTestingSuite) TestOnRecvPacketIBC() {
 				suite.chainB.App.(*app.Evmos).ClaimsKeeper.SetClaimsRecord(suite.chainB.GetContext(), receiverAddr, types.ClaimsRecord{InitialClaimableAmount: amt, ActionsCompleted: []bool{false, true, true, false}})
 
 				// update the escrowed account balance to maintain the invariant
-				err := testutil.FundModuleAccount(suite.chainB.App.(*app.Evmos).BankKeeper, suite.chainB.GetContext(), types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.chainB.GetContext(), suite.chainB.App.(*app.Evmos).BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 			},
 			func() {
@@ -316,7 +315,7 @@ func (suite *IBCTestingSuite) TestOnRecvPacketIBC() {
 				suite.chainB.App.(*app.Evmos).ClaimsKeeper.SetClaimsRecord(suite.chainB.GetContext(), senderAddr, types.NewClaimsRecord(amt))
 
 				// update the escrowed account balance to maintain the invariant
-				err := testutil.FundModuleAccount(suite.chainB.App.(*app.Evmos).BankKeeper, suite.chainB.GetContext(), types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.chainB.GetContext(), suite.chainB.App.(*app.Evmos).BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 			},
 			func() {
@@ -336,7 +335,7 @@ func (suite *IBCTestingSuite) TestOnRecvPacketIBC() {
 
 				coins := sdk.NewCoins(sdk.NewCoin("aevmos", amt))
 				// update the escrowed account balance to maintain the invariant
-				err := testutil.FundModuleAccount(suite.chainB.App.(*app.Evmos).BankKeeper, suite.chainB.GetContext(), types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.chainB.GetContext(), suite.chainB.App.(*app.Evmos).BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 			},
 			func() {},
@@ -363,7 +362,7 @@ func (suite *IBCTestingSuite) TestOnRecvPacketIBC() {
 
 				coins := sdk.NewCoins(sdk.NewCoin("aevmos", amt))
 				// update the escrowed account balance to maintain the invariant
-				err := testutil.FundModuleAccount(suite.chainB.App.(*app.Evmos).BankKeeper, suite.chainB.GetContext(), types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.chainB.GetContext(), suite.chainB.App.(*app.Evmos).BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 			},
 			func() {},
@@ -387,12 +386,16 @@ func (suite *IBCTestingSuite) TestOnRecvPacketIBC() {
 
 			tc.malleate(tc.claimableAmount)
 
-			transfer := transfertypes.NewFungibleTokenPacketData("aevmos", triggerAmt, sender, receiver)
+			transfer := transfertypes.NewFungibleTokenPacketData("aevmos", triggerAmt, sender, receiver, "")
 			bz := transfertypes.ModuleCdc.MustMarshalJSON(&transfer)
 			packet := channeltypes.NewPacket(bz, 1, path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, path.EndpointB.ChannelConfig.PortID, path.EndpointB.ChannelID, timeoutHeight, 0)
 
 			// send on endpointA
-			path.EndpointA.SendPacket(packet)
+			path.EndpointA.SendPacket(
+				packet.TimeoutHeight,
+				packet.TimeoutTimestamp,
+				packet.Data,
+			)
 
 			// receive on endpointB
 			err := path.EndpointB.RecvPacket(packet)

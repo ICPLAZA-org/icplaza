@@ -8,8 +8,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/evmos/ethermint/tests"
-	"github.com/gauss/gauss/v6/testutil"
-	"github.com/gauss/gauss/v6/x/claims/types"
+	"github.com/evmos/evmos/v11/testutil"
+	"github.com/evmos/evmos/v11/x/claims/types"
 )
 
 func (suite *KeeperTestSuite) TestAfterProposalVote() {
@@ -82,7 +82,7 @@ func (suite *KeeperTestSuite) TestAfterProposalVote() {
 				expBalance := suite.app.BankKeeper.GetBalance(suite.ctx, addr, params.ClaimsDenom)
 
 				coins := sdk.Coins{sdk.NewCoin(params.ClaimsDenom, sdk.NewInt(250))}
-				err := testutil.FundModuleAccount(suite.app.BankKeeper, suite.ctx, types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.ctx, suite.app.BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 
 				suite.app.ClaimsKeeper.AfterProposalVote(suite.ctx, 1, addr)
@@ -205,7 +205,7 @@ func (suite *KeeperTestSuite) TestAfterDelegation() {
 				expBalance := suite.app.BankKeeper.GetBalance(suite.ctx, addr, params.ClaimsDenom)
 
 				coins := sdk.Coins{sdk.NewCoin(params.ClaimsDenom, sdk.NewInt(250))}
-				err := testutil.FundModuleAccount(suite.app.BankKeeper, suite.ctx, types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.ctx, suite.app.BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 
 				suite.app.ClaimsKeeper.AfterDelegationModified(suite.ctx, addr, addr2)
@@ -274,7 +274,7 @@ func (suite *KeeperTestSuite) TestAfterEVMStateTransition() {
 		{
 			"no claim record",
 			func() {
-				err := suite.app.ClaimsKeeper.AfterEVMStateTransition(suite.ctx, msg, &receipt)
+				err := suite.app.ClaimsKeeper.PostTxProcessing(suite.ctx, msg, &receipt)
 				suite.Require().NoError(err)
 			},
 		},
@@ -293,7 +293,7 @@ func (suite *KeeperTestSuite) TestAfterEVMStateTransition() {
 				suite.app.ClaimsKeeper.SetParams(suite.ctx, params)
 				suite.app.ClaimsKeeper.SetClaimsRecord(suite.ctx, addr, claimRecord)
 
-				err := suite.app.ClaimsKeeper.AfterEVMStateTransition(suite.ctx, msg, &receipt)
+				err := suite.app.ClaimsKeeper.PostTxProcessing(suite.ctx, msg, &receipt)
 				suite.Require().NoError(err)
 			},
 		},
@@ -314,7 +314,7 @@ func (suite *KeeperTestSuite) TestAfterEVMStateTransition() {
 				suite.app.ClaimsKeeper.SetParams(suite.ctx, params)
 				suite.app.ClaimsKeeper.SetClaimsRecord(suite.ctx, addr, claimRecord)
 
-				err := suite.app.ClaimsKeeper.AfterEVMStateTransition(suite.ctx, msg, &receipt)
+				err := suite.app.ClaimsKeeper.PostTxProcessing(suite.ctx, msg, &receipt)
 				suite.Require().NoError(err)
 			},
 		},
@@ -337,10 +337,10 @@ func (suite *KeeperTestSuite) TestAfterEVMStateTransition() {
 				expBalance := suite.app.BankKeeper.GetBalance(suite.ctx, addr, params.ClaimsDenom)
 
 				coins := sdk.Coins{sdk.NewCoin(params.ClaimsDenom, sdk.NewInt(250))}
-				err := testutil.FundModuleAccount(suite.app.BankKeeper, suite.ctx, types.ModuleName, coins)
+				err := testutil.FundModuleAccount(suite.ctx, suite.app.BankKeeper, types.ModuleName, coins)
 				suite.Require().NoError(err)
 
-				err = suite.app.ClaimsKeeper.AfterEVMStateTransition(suite.ctx, msg, &receipt)
+				err = suite.app.ClaimsKeeper.PostTxProcessing(suite.ctx, msg, &receipt)
 				suite.Require().NoError(err)
 
 				newClaimRec, found := suite.app.ClaimsKeeper.GetClaimsRecord(suite.ctx, addr)
@@ -370,7 +370,7 @@ func (suite *KeeperTestSuite) TestAfterEVMStateTransition() {
 
 				expBalance := suite.app.BankKeeper.GetBalance(suite.ctx, addr, params.ClaimsDenom)
 
-				err := suite.app.ClaimsKeeper.AfterEVMStateTransition(suite.ctx, msg, &receipt)
+				err := suite.app.ClaimsKeeper.PostTxProcessing(suite.ctx, msg, &receipt)
 				suite.Require().NoError(err)
 
 				newClaimRec, found := suite.app.ClaimsKeeper.GetClaimsRecord(suite.ctx, addr)

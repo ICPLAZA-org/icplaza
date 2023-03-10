@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/gauss/gauss/v6/x/fixedprice/types"
+	"github.com/evmos/evmos/v11/x/fixedprice/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"

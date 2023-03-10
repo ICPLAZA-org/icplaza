@@ -1,15 +1,32 @@
+// Copyright 2022 Evmos Foundation
+// This file is part of the Evmos Network packages.
+//
+// Evmos is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The Evmos packages are distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the Evmos packages. If not, see https://github.com/evmos/evmos/blob/main/LICENSE
+
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	"github.com/cosmos/ibc-go/v3/modules/core/exported"
+	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
+	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
+	"github.com/cosmos/ibc-go/v6/modules/core/exported"
 
-	"github.com/gauss/gauss/v6/ibc"
-	evmos "github.com/gauss/gauss/v6/types"
-	"github.com/gauss/gauss/v6/x/claims/types"
+	"github.com/evmos/evmos/v11/ibc"
+	evmos "github.com/evmos/evmos/v11/types"
+	"github.com/evmos/evmos/v11/x/claims/types"
 )
 
 // OnAcknowledgementPacket performs an IBC send callback. Once a user submits an
@@ -33,7 +50,7 @@ func (k Keeper) OnAcknowledgementPacket(
 
 	var ack channeltypes.Acknowledgement
 	if err := transfertypes.ModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal ICS-20 transfer packet acknowledgement: %v", err)
+		return errorsmod.Wrapf(errortypes.ErrUnknownRequest, "cannot unmarshal ICS-20 transfer packet acknowledgement: %v", err)
 	}
 
 	// no-op if the acknowledgement is an error ACK
@@ -87,17 +104,17 @@ func (k Keeper) OnRecvPacket(
 	// readable prefix (HRP) of the sender to `evmos1`
 	sender, recipient, senderBech32, recipientBech32, err := ibc.GetTransferSenderRecipient(packet)
 	if err != nil {
-		return channeltypes.NewErrorAcknowledgement(err.Error())
+		return channeltypes.NewErrorAcknowledgement(err)
 	}
 
 	// return error ACK for blocked sender and recipient addresses
 	if k.bankKeeper.BlockedAddr(sender) || k.bankKeeper.BlockedAddr(recipient) {
 		return channeltypes.NewErrorAcknowledgement(
-			sdkerrors.Wrapf(
-				sdkerrors.ErrUnauthorized,
+			errorsmod.Wrapf(
+				errortypes.ErrUnauthorized,
 				"sender (%s) or recipient (%s) address are in the deny list for sending and receiving transfers",
 				senderBech32, recipientBech32,
-			).Error(),
+			),
 		)
 	}
 
@@ -123,9 +140,9 @@ func (k Keeper) OnRecvPacket(
 			// secp256k1 key from sender/recipient has no claimed actions
 			// -> return error acknowledgement to prevent funds from getting stuck
 			return channeltypes.NewErrorAcknowledgement(
-				sdkerrors.Wrapf(
+				errorsmod.Wrapf(
 					evmos.ErrKeyTypeNotSupported, "receiver address %s is not a valid ethereum address", recipientBech32,
-				).Error(),
+				),
 			)
 		default:
 			// sender/recipient has funds stuck -> return ack to trigger withdrawal
@@ -142,7 +159,7 @@ func (k Keeper) OnRecvPacket(
 
 	amt, err := ibc.GetTransferAmount(packet)
 	if err != nil {
-		return channeltypes.NewErrorAcknowledgement(err.Error())
+		return channeltypes.NewErrorAcknowledgement(err)
 	}
 
 	isTriggerAmt := amt == types.IBCTriggerAmt
@@ -158,7 +175,7 @@ func (k Keeper) OnRecvPacket(
 		// have already been claimed by one or the other
 		recipientClaimsRecord, err = k.MergeClaimsRecords(ctx, recipient, senderClaimsRecord, recipientClaimsRecord, params)
 		if err != nil {
-			return channeltypes.NewErrorAcknowledgement(err.Error())
+			return channeltypes.NewErrorAcknowledgement(err)
 		}
 
 		// update the recipient's record with the new merged one and delete the
@@ -175,7 +192,7 @@ func (k Keeper) OnRecvPacket(
 		// case 2: only the sender has a claims record
 		// -> migrate the sender record to the recipient address and claim IBC action
 
-		claimedAmt := sdk.ZeroInt() // nolint: ineffassign
+		claimedAmt := sdk.ZeroInt() // nolint
 		claimedAmt, err = k.ClaimCoinsForAction(ctx, recipient, senderClaimsRecord, types.ActionIBCTransfer, params)
 
 		// if the transfer fails or the claimable amount is 0 (eg: action already
@@ -206,7 +223,7 @@ func (k Keeper) OnRecvPacket(
 	}
 
 	if err != nil {
-		return channeltypes.NewErrorAcknowledgement(err.Error())
+		return channeltypes.NewErrorAcknowledgement(err)
 	}
 
 	// return the original success acknowledgement

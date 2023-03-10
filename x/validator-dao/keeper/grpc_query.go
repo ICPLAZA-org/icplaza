@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/gauss/gauss/v6/x/validator-dao/types"
+	"github.com/evmos/evmos/v11/x/validator-dao/types"
 )
 
 var _ types.QueryServer = Keeper{}

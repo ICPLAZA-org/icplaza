@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/gauss/gauss/v6/x/auction/types"
+	"github.com/evmos/evmos/v11/x/auction/types"
 )
 
 type msgServer struct {

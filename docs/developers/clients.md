@@ -28,7 +28,7 @@ wallets and block explorers to interact with the Proof-of-Stake logic and native
 
 [gRPC-Gateway](https://grpc-ecosystem.github.io/grpc-gateway/) reads a gRPC service definition and
 generates a reverse-proxy server which translates RESTful JSON API into gRPC. With gRPC-Gateway,
-users can use REST to interact the Cosmos gRPC service.
+users can use REST to interact with the Cosmos gRPC service.
 
 See the list of supported gRPC-Gateway API endpoints for the Evmos testnet [here](https://api.evmos.dev/).
 
@@ -49,7 +49,7 @@ Check out the list of supported JSON-RPC API [endpoints](./json-rpc/endpoints.md
 Then, start a websocket subscription with [`ws`](https://github.com/hashrocket/ws)
 
 ```bash
-# connect to tendermint websocet at port 8546 as defined above
+# connect to tendermint websocket at port 8546 as defined above
 ws ws://localhost:8546/
 
 # subscribe to new Ethereum-formatted block Headers
@@ -62,7 +62,7 @@ ws ws://localhost:8546/
 Tendermint Core provides a Websocket connection to subscribe or unsubscribe to Tendermint ABCI events.
 
 ::: tip
-For more info about the how to subscribe to events, please refer to the official [Tendermint documentation](https://docs.tendermint.com/v0.34/tendermint-core/subscription.html).
+For more info about how to subscribe to events, please refer to the official [Tendermint documentation](https://docs.tendermint.com/v0.34/tendermint-core/subscription.html).
 :::
 
 ```json
@@ -231,3 +231,14 @@ Look for a publicly available addresses for testnet and mainnet in the [Quick Co
       upgrade                  Querying commands for the upgrade module
       vesting                  Querying commands for the vesting module
     ```
+
+::: tip
+**Note:** When querying Ethereum transactions versus Cosmos transactions, the transaction hashes are different.
+When querying Ethereum transactions, users need to use event query.
+Here's an example with the CLI:
+
+```bash
+curl -X GET "http://localhost:26657/tx_search?query=ethereum_tx.ethereumTxHash%3D0x8d43464891fac6c113e809e14dff1a3e608eae124d629799e42ca0e36562d9d7&prove=false&page=1&per_page=30&order_by=asc" -H "accept: application/json"  
+```
+
+:::

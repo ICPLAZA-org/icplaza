@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/gauss/gauss/v6/x/validator-dao/types"
+	"github.com/evmos/evmos/v11/x/validator-dao/types"
 )
 
 type msgServer struct {

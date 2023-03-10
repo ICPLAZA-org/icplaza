@@ -1,6 +1,5 @@
-
 <!--
-order: 2
+order: 3
 -->
 
 # Automated Upgrades
@@ -9,16 +8,17 @@ Learn how to automate chain upgrades using Cosmovisor. {synopsis}
 
 ## Pre-requisites
 
-- [Install Cosmovisor](https://docs.cosmos.network/main/run-node/cosmovisor.html#installation) {prereq}
+- [Install Cosmovisor](https://docs.cosmos.network/main/tooling/cosmovisor#installation) {prereq}
 
 ## Using Cosmovisor
 
 > `cosmovisor` is a small process manager for Cosmos SDK application binaries that monitors the governance module for incoming chain upgrade proposals. If it sees a proposal that gets approved, cosmovisor can automatically download the new binary, stop the current binary, switch from the old binary to the new one, and finally restart the node with the new binary.
 
 ::: tip
-👉 For more info about Cosmovisor, please refer to the project official documentation [here](https://docs.cosmos.network/main/run-node/cosmovisor.html).
+👉 For more info about Cosmovisor, please refer to the project official documentation [here](https://docs.cosmos.network/main/tooling/cosmovisor).
 :::
 
+<!-- markdown-link-check-disable-next-line -->
 We highly recommend validators use Cosmovisor to run their nodes. This will make low-downtime upgrades smoother, as validators don't have to [manually upgrade](./manual.md) binaries during the upgrade. Instead users can [pre-install](#manual-download) new binaries, and Cosmovisor will automatically update them based on on-chain Software Upgrade proposals.
 
 ### 1. Setup Cosmovisor
@@ -46,13 +46,14 @@ cp $GOPATH/bin/evmosd ~/.evmosd/cosmovisor/genesis/bin
 To check that you did this correctly, ensure your versions of `cosmovisor` and `evmosd` are the same:
 
 ```bash
-cosmovisor version
+cosmovisor run version
 evmosd version
 ```
 
 ### 2. Download the Evmos release
 
-#### 2.a) Manual Download
+<!-- NOTE: Using a h4 tag here so the relative markdown link used at the top of this document works -->
+<h4 id="manual-download">2.a) Manual Download</h4>
 
 Cosmovisor will continually poll the `$DAEMON_HOME/data/upgrade-info.json` for new upgrade instructions. When an upgrade is [released](https://github.com/evmos/evmos/releases), node operators need to:
 
@@ -67,7 +68,7 @@ Cosmovisor will continually poll the `$DAEMON_HOME/data/upgrade-info.json` for n
         "darwin/arm64": "https://github.com/evmos/evmos/releases/download/v3.0.0/evmos_3.0.0_Darwin_arm64.tar.gz",
         "darwin/x86_64": "https://github.com/evmos/evmos/releases/download/v3.0.0/evmos_3.0.0_Darwin_x86_64.tar.gz",
         "linux/arm64": "https://github.com/evmos/evmos/releases/download/v3.0.0/evmos_3.0.0_Linux_arm64.tar.gz",
-        "linux/x86_64": "https://github.com/evmos/evmos/releases/download/v3.0.0/evmos_3.0.0_Linux_x86_64.tar.gz",
+        "linux/amd64": "https://github.com/evmos/evmos/releases/download/v3.0.0/evmos_3.0.0_Linux_amd64.tar.gz",
         "windows/x86_64": "https://github.com/evmos/evmos/releases/download/v3.0.0/evmos_3.0.0_Windows_x86_64.zip"
     }
 }
@@ -94,7 +95,7 @@ cosmovisor/
 **NOTE**: Auto-download doesn't verify in advance if a binary is available. If there will be any issue with downloading a binary, `cosmovisor` will stop and won't restart an the chain (which could lead it to a halt).
 :::
 
-It is possible to have Cosmovisor [automatically download](https://docs.cosmos.network/main/run-node/cosmovisor.html#auto-download) the new binary. Validators can use the automatic download option to prevent unnecessary downtime during the upgrade process. This option will automatically restart the chain with the upgrade binary once the chain has halted at the proposed `upgrade-height`. The major benefit of this option is that validators can prepare the upgrade binary in advance and then relax at the time of the upgrade.
+It is possible to have Cosmovisor [automatically download](https://docs.cosmos.network/main/tooling/cosmovisor#auto-download) the new binary. Validators can use the automatic download option to prevent unnecessary downtime during the upgrade process. This option will automatically restart the chain with the upgrade binary once the chain has halted at the proposed `upgrade-height`. The major benefit of this option is that validators can prepare the upgrade binary in advance and then relax at the time of the upgrade.
 
 To set the auto-download use set the following environment variable:
 
@@ -107,7 +108,7 @@ echo "export DAEMON_ALLOW_DOWNLOAD_BINARIES=true" >> ~/.profile
 Now that everything is setup and ready to go, you can start your node.
 
 ```bash
-cosmovisor start
+cosmovisor run start
 ```
 
 You will need some way to keep the process always running. If you're on linux, you can do this by creating a service.

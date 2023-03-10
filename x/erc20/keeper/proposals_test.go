@@ -3,6 +3,9 @@ package keeper_test
 import (
 	"fmt"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/stretchr/testify/mock"
@@ -12,9 +15,9 @@ import (
 	"github.com/evmos/ethermint/tests"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 
-	"github.com/gauss/gauss/v6/x/erc20/keeper"
-	"github.com/gauss/gauss/v6/x/erc20/types"
-	inflationtypes "github.com/gauss/gauss/v6/x/inflation/types"
+	"github.com/evmos/evmos/v11/x/erc20/keeper"
+	"github.com/evmos/evmos/v11/x/erc20/types"
+	inflationtypes "github.com/evmos/evmos/v11/x/inflation/types"
 )
 
 const (
@@ -32,7 +35,43 @@ const (
 	cosmosDecimals     = uint8(6)
 	defaultExponent    = uint32(18)
 	zeroExponent       = uint32(0)
-	ibcBase            = "ibc/7F1D3FCF4AE79E1554D670D1AD949A9BA4E4A3C76C63093E17E446A46061A7A2"
+	ibcBase            = "ibc/7B2A4F6E798182988D77B6B884919AF617A73503FDAC27C916CD7A69A69013CF"
+)
+
+var (
+	metadataCoin = banktypes.Metadata{
+		Description: "description of the token",
+		Base:        cosmosTokenBase,
+		// NOTE: Denom units MUST be increasing
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    cosmosTokenBase,
+				Exponent: 0,
+			},
+			{
+				Denom:    cosmosTokenDisplay,
+				Exponent: defaultExponent,
+			},
+		},
+		Name:    cosmosTokenBase,
+		Symbol:  erc20Symbol,
+		Display: cosmosTokenBase,
+	}
+
+	metadataIbc = banktypes.Metadata{
+		Description: "ATOM IBC voucher (channel 14)",
+		Base:        ibcBase,
+		// NOTE: Denom units MUST be increasing
+		DenomUnits: []*banktypes.DenomUnit{
+			{
+				Denom:    ibcBase,
+				Exponent: 0,
+			},
+		},
+		Name:    "ATOM channel-14",
+		Symbol:  "ibcATOM-14",
+		Display: ibcBase,
+	}
 )
 
 func (suite *KeeperTestSuite) setupRegisterERC20Pair(contractType int) common.Address {
@@ -53,62 +92,15 @@ func (suite *KeeperTestSuite) setupRegisterERC20Pair(contractType int) common.Ad
 	return contract
 }
 
-func (suite *KeeperTestSuite) setupRegisterCoin() (banktypes.Metadata, *types.TokenPair) {
-	validMetadata := banktypes.Metadata{
-		Description: "description of the token",
-		Base:        cosmosTokenBase,
-		// NOTE: Denom units MUST be increasing
-		DenomUnits: []*banktypes.DenomUnit{
-			{
-				Denom:    cosmosTokenBase,
-				Exponent: 0,
-			},
-			{
-				Denom:    cosmosTokenBase[1:],
-				Exponent: uint32(18),
-			},
-		},
-		Name:    cosmosTokenBase,
-		Symbol:  erc20Symbol,
-		Display: cosmosTokenBase,
-	}
-
-	err := suite.app.BankKeeper.MintCoins(suite.ctx, inflationtypes.ModuleName, sdk.Coins{sdk.NewInt64Coin(validMetadata.Base, 1)})
+func (suite *KeeperTestSuite) setupRegisterCoin(metadata banktypes.Metadata) *types.TokenPair {
+	err := suite.app.BankKeeper.MintCoins(suite.ctx, inflationtypes.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
 	suite.Require().NoError(err)
 
 	// pair := types.NewTokenPair(contractAddr, cosmosTokenBase, true, types.OWNER_MODULE)
-	pair, err := suite.app.Erc20Keeper.RegisterCoin(suite.ctx, validMetadata)
+	pair, err := suite.app.Erc20Keeper.RegisterCoin(suite.ctx, metadata)
 	suite.Require().NoError(err)
 	suite.Commit()
-	return validMetadata, pair
-}
-
-func (suite *KeeperTestSuite) setupRegisterIBCVoucher() (banktypes.Metadata, *types.TokenPair) {
-	suite.SetupTest()
-
-	validMetadata := banktypes.Metadata{
-		Description: "ATOM IBC voucher (channel 14)",
-		Base:        ibcBase,
-		// NOTE: Denom units MUST be increasing
-		DenomUnits: []*banktypes.DenomUnit{
-			{
-				Denom:    ibcBase,
-				Exponent: 0,
-			},
-		},
-		Name:    "ATOM channel-14",
-		Symbol:  "ibcATOM-14",
-		Display: ibcBase,
-	}
-
-	err := suite.app.BankKeeper.MintCoins(suite.ctx, inflationtypes.ModuleName, sdk.Coins{sdk.NewInt64Coin(validMetadata.Base, 1)})
-	suite.Require().NoError(err)
-
-	// pair := types.NewTokenPair(contractAddr, cosmosTokenBase, true, types.OWNER_MODULE)
-	pair, err := suite.app.Erc20Keeper.RegisterCoin(suite.ctx, validMetadata)
-	suite.Require().NoError(err)
-	suite.Commit()
-	return validMetadata, pair
+	return pair
 }
 
 func (suite KeeperTestSuite) TestRegisterCoin() {
@@ -190,42 +182,6 @@ func (suite KeeperTestSuite) TestRegisterCoin() {
 			false,
 		},
 		{
-			"evm denom registration - evm",
-			func() {
-				metadata.Base = "evm"
-				err := suite.app.BankKeeper.MintCoins(suite.ctx, inflationtypes.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
-				suite.Require().NoError(err)
-			},
-			false,
-		},
-		{
-			"evm denom registration - evmos",
-			func() {
-				metadata.Base = "evmos"
-				err := suite.app.BankKeeper.MintCoins(suite.ctx, inflationtypes.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
-				suite.Require().NoError(err)
-			},
-			false,
-		},
-		{
-			"evm denom registration - aevmos",
-			func() {
-				metadata.Base = "aevmos"
-				err := suite.app.BankKeeper.MintCoins(suite.ctx, inflationtypes.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
-				suite.Require().NoError(err)
-			},
-			false,
-		},
-		{
-			"evm denom registration - wevmos",
-			func() {
-				metadata.Base = "wevmos"
-				err := suite.app.BankKeeper.MintCoins(suite.ctx, inflationtypes.ModuleName, sdk.Coins{sdk.NewInt64Coin(metadata.Base, 1)})
-				suite.Require().NoError(err)
-			},
-			false,
-		},
-		{
 			"ok",
 			func() {
 				metadata.Base = cosmosTokenBase
@@ -242,9 +198,12 @@ func (suite KeeperTestSuite) TestRegisterCoin() {
 				suite.Require().NoError(err)
 
 				mockEVMKeeper := &MockEVMKeeper{}
-				sp, found := suite.app.ParamsKeeper.GetSubspace(types.ModuleName)
-				suite.Require().True(found)
-				suite.app.Erc20Keeper = keeper.NewKeeper(suite.app.GetKey("erc20"), suite.app.AppCodec(), sp, suite.app.AccountKeeper, suite.app.BankKeeper, mockEVMKeeper)
+
+				suite.app.Erc20Keeper = keeper.NewKeeper(
+					suite.app.GetKey("erc20"), suite.app.AppCodec(),
+					authtypes.NewModuleAddress(govtypes.ModuleName), suite.app.AccountKeeper,
+					suite.app.BankKeeper, mockEVMKeeper, suite.app.StakingKeeper, suite.app.ClaimsKeeper)
+
 				mockEVMKeeper.On("EstimateGas", mock.Anything, mock.Anything).Return(&evmtypes.EstimateGasResponse{Gas: uint64(200)}, nil)
 				mockEVMKeeper.On("ApplyMessage", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil, fmt.Errorf("forced ApplyMessage error"))
 			},
@@ -300,15 +259,6 @@ func (suite KeeperTestSuite) TestRegisterERC20() {
 		expPass  bool
 	}{
 		{
-			"conversion is disabled globally",
-			func() {
-				params := types.DefaultParams()
-				params.EnableErc20 = false
-				suite.app.Erc20Keeper.SetParams(suite.ctx, params)
-			},
-			false,
-		},
-		{
 			"token ERC20 already registered",
 			func() {
 				suite.app.Erc20Keeper.SetERC20Map(suite.ctx, pair.GetERC20Contract(), pair.GetID())
@@ -338,9 +288,12 @@ func (suite KeeperTestSuite) TestRegisterERC20() {
 			"force fail evm",
 			func() {
 				mockEVMKeeper := &MockEVMKeeper{}
-				sp, found := suite.app.ParamsKeeper.GetSubspace(types.ModuleName)
-				suite.Require().True(found)
-				suite.app.Erc20Keeper = keeper.NewKeeper(suite.app.GetKey("erc20"), suite.app.AppCodec(), sp, suite.app.AccountKeeper, suite.app.BankKeeper, mockEVMKeeper)
+
+				suite.app.Erc20Keeper = keeper.NewKeeper(
+					suite.app.GetKey("erc20"), suite.app.AppCodec(),
+					authtypes.NewModuleAddress(govtypes.ModuleName), suite.app.AccountKeeper,
+					suite.app.BankKeeper, mockEVMKeeper, suite.app.StakingKeeper, suite.app.ClaimsKeeper)
+
 				mockEVMKeeper.On("EstimateGas", mock.Anything, mock.Anything).Return(&evmtypes.EstimateGasResponse{Gas: uint64(200)}, nil)
 				mockEVMKeeper.On("ApplyMessage", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil, fmt.Errorf("forced ApplyMessage error"))
 			},
@@ -382,10 +335,6 @@ func (suite KeeperTestSuite) TestRegisterERC20() {
 			}
 		})
 	}
-}
-
-func (suite *KeeperTestSuite) TestRegisterIBCVoucher() {
-	suite.setupRegisterIBCVoucher()
 }
 
 func (suite KeeperTestSuite) TestToggleConverision() {

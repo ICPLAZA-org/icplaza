@@ -2,12 +2,12 @@ package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
-	"github.com/gauss/gauss/v6/x/token/types"
+	"github.com/evmos/evmos/v11/x/token/types"
 )
 
 // SendKeeper defines a module interface that facilitates the transfer of coins
@@ -32,13 +32,13 @@ type BaseSendKeeper struct {
 	BaseViewKeeper
 
 	cdc		codec.BinaryCodec
-	storeKey	sdk.StoreKey
+	storeKey	storetypes.StoreKey
 	bankKeeper	types.BankKeeper
 	paramSpace	paramtypes.Subspace
 }
 
 func NewBaseSendKeeper(
-	cdc codec.BinaryCodec, storeKey sdk.StoreKey, bk types.BankKeeper, paramSpace paramtypes.Subspace,
+	cdc codec.BinaryCodec, storeKey storetypes.StoreKey, bk types.BankKeeper, paramSpace paramtypes.Subspace,
 ) BaseSendKeeper {
 	return BaseSendKeeper{
 		BaseViewKeeper: NewBaseViewKeeper(cdc, storeKey, bk),

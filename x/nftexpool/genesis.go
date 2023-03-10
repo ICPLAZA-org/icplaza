@@ -2,8 +2,8 @@ package pool
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/gauss/gauss/v6/x/nftexpool/keeper"
-	"github.com/gauss/gauss/v6/x/nftexpool/types"
+	"github.com/evmos/evmos/v11/x/nftexpool/keeper"
+	"github.com/evmos/evmos/v11/x/nftexpool/types"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis

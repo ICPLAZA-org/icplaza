@@ -1,25 +1,43 @@
+// Copyright 2022 Evmos Foundation
+// This file is part of the Evmos Network packages.
+//
+// Evmos is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The Evmos packages are distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the Evmos packages. If not, see https://github.com/evmos/evmos/blob/main/LICENSE
+
 package keeper
 
 import (
 	"math/big"
 	"strconv"
 
+	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"github.com/armon/go-metrics"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/gauss/gauss/v6/x/incentives/types"
+	"github.com/evmos/evmos/v11/x/incentives/types"
 )
 
 // DistributeRewards transfers the allocated rewards to the participants of a given
 // incentive.
-//  - allocates the amount to be distributed from the inflation pool
-//  - distributes the rewards to all participants
-//  - deletes all gas meters
-//  - updates the remaining epochs of each incentive
-//  - sets the cumulative totalGas to zero
+//   - allocates the amount to be distributed from the inflation pool
+//   - distributes the rewards to all participants
+//   - deletes all gas meters
+//   - updates the remaining epochs of each incentive
+//   - sets the cumulative totalGas to zero
 func (k Keeper) DistributeRewards(ctx sdk.Context) error {
 	logger := k.Logger(ctx)
 
@@ -29,7 +47,7 @@ func (k Keeper) DistributeRewards(ctx sdk.Context) error {
 	}
 
 	k.IterateIncentives(ctx, func(incentive types.Incentive) (stop bool) {
-		rewards, participants := k.rewardParticipants(ctx, incentive, rewardAllocations)
+		_, _ = k.rewardParticipants(ctx, incentive, rewardAllocations)
 
 		incentive.Epochs--
 
@@ -45,18 +63,6 @@ func (k Keeper) DistributeRewards(ctx sdk.Context) error {
 				"contract", incentive.Contract,
 			)
 		}
-
-		defer func() {
-			if !rewards.IsZero() {
-				telemetry.IncrCounterWithLabels(
-					[]string{types.ModuleName, "distribute", "participant", "total"},
-					float32(participants),
-					[]metrics.Label{
-						telemetry.NewLabel("contract", incentive.Contract),
-					},
-				)
-			}
-		}()
 
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
@@ -87,14 +93,14 @@ func (k Keeper) DistributeRewards(ctx sdk.Context) error {
 }
 
 // rewardAllocations returns a map of each incentive's reward allocation
-//  - Iterate over all the registered and active incentives
-//  - create an allocation (module account) from escrow balance to be distributed to the contract address
-//  - check that escrow balance is sufficient
+//   - Iterate over all the registered and active incentives
+//   - create an allocation (module account) from escrow balance to be distributed to the contract address
+//   - check that escrow balance is sufficient
 func (k Keeper) rewardAllocations(
 	ctx sdk.Context,
 ) (map[common.Address]sdk.Coins, sdk.Coins, error) {
 	// Get balances on incentive module account
-	denomBalances := make(map[string]sdk.Int)
+	denomBalances := make(map[string]math.Int)
 	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
 
 	escrow := sdk.Coins{}
@@ -128,8 +134,8 @@ func (k Keeper) rewardAllocations(
 				}
 
 				// allocation for the contract is the amount escrowed * the allocation %
-				coinAllocated := denomBalances[al.Denom].ToDec().Mul(al.Amount)
-				amount := coinAllocated.TruncateInt()
+				coinAllocated := sdk.NewDecFromInt(denomBalances[al.Denom]).Mul(al.Amount).TruncateInt()
+				amount := coinAllocated
 
 				// NOTE: safety check, shouldn't occur since the allocation and balance
 				// are > 0
@@ -150,8 +156,8 @@ func (k Keeper) rewardAllocations(
 
 	// checks if module account has sufficient balance for allocation
 	if rewards.IsAnyGT(escrow) {
-		return nil, nil, sdkerrors.Wrapf(
-			sdkerrors.ErrInsufficientFunds,
+		return nil, nil, errorsmod.Wrapf(
+			errortypes.ErrInsufficientFunds,
 			"escrowed balance < total coins allocated (%s < %s)",
 			escrow, rewards,
 		)
@@ -162,11 +168,11 @@ func (k Keeper) rewardAllocations(
 
 // rewardParticipants reward participants of a given Incentive, delete their gas
 // meters and returns a count of all gas meters
-//  - Check if participants spent gas on interacting with incentive
-//  - Iterate over the incentive participants' gas meters
-//    - Allocate rewards according to participants gasRatio and cap them at 100% of their gas spent on interaction with incentive
-//    - Send rewards to participants
-//    - Delete gas meter
+//   - Check if participants spent gas on interacting with incentive
+//   - Iterate over the incentive participants' gas meters
+//   - Allocate rewards according to participants gasRatio and cap them at 100% of their gas spent on interaction with incentive
+//   - Send rewards to participants
+//   - Delete gas meter
 func (k Keeper) rewardParticipants(
 	ctx sdk.Context,
 	incentive types.Incentive,

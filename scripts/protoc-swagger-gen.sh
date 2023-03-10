@@ -2,34 +2,19 @@
 
 set -eo pipefail
 
-SDK_VERSION=v0.45.4
-ETHERMINT_VERSION=v0.15.0
+# need to install statik on the docker image
+go install github.com/rakyll/statik
 
-ROOTPATH=/root/github.com/jonathan/thirds/icplaza
+# create temporary folder to store intermediate results from `buf build` + `buf generate`
+mkdir -p ./tmp-swagger-gen
 
-rm -rf ./tmp-swagger-gen ./tmp && mkdir -p ./tmp-swagger-gen ./tmp/proto ./tmp/third_party
-
-cp -r ./proto ./tmp
-cp -r ./third_party/proto ./tmp/third_party
-cp -r ${ROOTPATH}/cosmos-sdk-icplaza@${SDK_VERSION}/proto ./tmp/third_party
-
-proto_dirs=$(find ./tmp/proto ./tmp/third_party/proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
+# create swagger files on an individual basis  w/ `buf build` and `buf generate` (needed for `swagger-combine`)
+proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
-
   # generate swagger files (filter query files)
   query_file=$(find "${dir}" -maxdepth 1 \( -name 'query.proto' -o -name 'service.proto' \))
-  # TODO: migrate to `buf build`
-
-  if [[ $dir =~ "cosmos" ]]; then
-      query_file=$(find "${dir}" -maxdepth 1 \( -name 'query.proto' -o -name 'service.proto' \))
-  fi
-  if [[ ! -z "$query_file" ]]; then
-    protoc  \
-    -I "tmp/proto" \
-    -I "tmp/third_party/proto" \
-    "$query_file" \
-    --swagger_out=./tmp-swagger-gen \
-    --swagger_opt=logtostderr=true --swagger_opt=fqn_for_swagger_name=true --swagger_opt=simple_operation_ids=true
+  if [[ -n "$query_file" ]]; then
+    buf generate --template proto/buf.gen.swagger.yaml "$query_file"
   fi
 done
 
@@ -41,8 +26,5 @@ swagger-combine ./client/docs/config.json -o ./client/docs/swagger-ui/swagger.ya
 # clean swagger files
 rm -rf ./tmp-swagger-gen
 
-# clean proto files
-rm -rf ./tmp
-
-# generate binary for static server
-statik -src=./client/docs/swagger-ui -dest=./client/docs
+# generate binary for static server (use -f flag to replace current binary)
+statik -f -src=./client/docs/swagger-ui -dest=./client/docs

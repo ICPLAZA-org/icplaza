@@ -3,15 +3,14 @@ package keeper
 import (
 	"fmt"
 
-	gogotypes "github.com/gogo/protobuf/types"
-
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/evmos/evmos/v11/x/token/types"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	
-	"github.com/gauss/gauss/v6/x/token/types"
+	gogotypes "github.com/gogo/protobuf/types"
 )
 
 // ViewKeeper defines a module interface that facilitates read only access to
@@ -31,12 +30,12 @@ var _ ViewKeeper = (*BaseViewKeeper)(nil)
 // BaseViewKeeper implements a read only keeper implementation of ViewKeeper.
 type BaseViewKeeper struct {
 	cdc		codec.BinaryCodec
-	storeKey	sdk.StoreKey
+	storeKey	storetypes.StoreKey
 	bankKeeper	types.BankKeeper
 }
 
 // NewBaseViewKeeper returns a new BaseViewKeeper.
-func NewBaseViewKeeper(cdc codec.BinaryCodec, storeKey sdk.StoreKey, bk types.BankKeeper) BaseViewKeeper {
+func NewBaseViewKeeper(cdc codec.BinaryCodec, storeKey storetypes.StoreKey, bk types.BankKeeper) BaseViewKeeper {
 	return BaseViewKeeper{
 		cdc:		cdc,
 		storeKey:	storeKey,

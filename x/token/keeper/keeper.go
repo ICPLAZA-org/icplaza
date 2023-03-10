@@ -2,11 +2,11 @@ package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	
-	"github.com/gauss/gauss/v6/x/token/types"
+	"github.com/evmos/evmos/v11/x/token/types"
 )
 
 var _ Keeper = (*BaseKeeper)(nil)
@@ -45,7 +45,7 @@ type Keeper interface {
 type BaseKeeper struct {
 	BaseSendKeeper
 
-	storeKey		sdk.StoreKey
+	storeKey		storetypes.StoreKey
 	cdc			codec.BinaryCodec
 	bankKeeper		types.BankKeeper
 
@@ -57,7 +57,7 @@ type BaseKeeper struct {
 	paramSpace		paramstypes.Subspace
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, paramSpace paramstypes.Subspace,
+func NewKeeper(cdc codec.BinaryCodec, key storetypes.StoreKey, paramSpace paramstypes.Subspace,
 	bankKeeper types.BankKeeper, blockedAddress map[string]bool, feeCollectorName string) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {

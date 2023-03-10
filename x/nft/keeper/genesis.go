@@ -2,7 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/gauss/gauss/v6/x/nft/types"
+	"github.com/evmos/evmos/v11/x/nft/types"
 )
 
 // InitGenesis initializes the nft module's state from a given genesis state.

@@ -9,7 +9,7 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 
-	"github.com/gauss/gauss/v6/x/validator-dao/types"
+	"github.com/evmos/evmos/v11/x/validator-dao/types"
 )
 
 // Hooks wrapper struct
@@ -41,7 +41,7 @@ func (k Keeper) Hooks() Hooks {
 func (h Hooks) PostTxProcessing(
 	ctx sdk.Context,
 	msg core.Message,
-	receipt *ethtypes.Receipt,
+	_ *ethtypes.Receipt,
 ) error {
 
 	if msg.To() != nil {
@@ -51,22 +51,41 @@ func (h Hooks) PostTxProcessing(
 	granteeAddr := evmtypes.AccAddress(msg.From())
 	if !h.k.ConsumeAuthorization(ctx, granteeAddr, types.IssueErc20BizKey) {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "account(%s:%s) does not have permissions to issue erc20.", msg.From(), granteeAddr.String())
-	} 
+	}
 
 	return nil
 }
 
 // AfterValidatorRemoved performs clean up after a validator is removed
-func (h Hooks) AfterValidatorRemoved(ctx sdk.Context, _ sdk.ConsAddress, valAddr sdk.ValAddress) {
+func (h Hooks) AfterValidatorRemoved(ctx sdk.Context, _ sdk.ConsAddress, valAddr sdk.ValAddress) error {
 	h.k.RemoveAuthorizerBizs(ctx, sdk.AccAddress(valAddr))
+	return nil
 }
 
-func (h Hooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress) {}
-func (h Hooks) BeforeDelegationCreated(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {}
-func (h Hooks) BeforeDelegationSharesModified(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {}
-func (h Hooks) AfterDelegationModified(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {}
-func (h Hooks) BeforeValidatorSlashed(ctx sdk.Context, valAddr sdk.ValAddress, fraction sdk.Dec) {}
-func (h Hooks) BeforeValidatorModified(_ sdk.Context, _ sdk.ValAddress)                         {}
-func (h Hooks) AfterValidatorBonded(_ sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress)         {}
-func (h Hooks) AfterValidatorBeginUnbonding(_ sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress) {}
-func (h Hooks) BeforeDelegationRemoved(_ sdk.Context, _ sdk.AccAddress, _ sdk.ValAddress)       {}
+func (h Hooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress) error {
+	return nil
+}
+func (h Hooks) BeforeDelegationCreated(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	return nil
+}
+func (h Hooks) BeforeDelegationSharesModified(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	return nil
+}
+func (h Hooks) AfterDelegationModified(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	return nil
+}
+func (h Hooks) BeforeValidatorSlashed(ctx sdk.Context, valAddr sdk.ValAddress, fraction sdk.Dec) error {
+	return nil
+}
+func (h Hooks) BeforeValidatorModified(_ sdk.Context, _ sdk.ValAddress) error {
+	return nil
+}
+func (h Hooks) AfterValidatorBonded(_ sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress) error {
+	return nil
+}
+func (h Hooks) AfterValidatorBeginUnbonding(_ sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress) error {
+	return nil
+}
+func (h Hooks) BeforeDelegationRemoved(_ sdk.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
+	return nil
+}

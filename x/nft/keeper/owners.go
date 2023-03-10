@@ -4,7 +4,7 @@ import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/gauss/gauss/v6/x/nft/types"
+	"github.com/evmos/evmos/v11/x/nft/types"
 )
 
 // GetOwners returns all the Owners ID Collections

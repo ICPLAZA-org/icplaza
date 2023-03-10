@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/gauss/gauss/v6/x/nftexpool/types"
+	"github.com/evmos/evmos/v11/x/nftexpool/types"
 )
 
 var _ = strconv.Itoa(0)

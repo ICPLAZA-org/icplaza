@@ -4,7 +4,7 @@ import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/gauss/gauss/v6/x/auction/types"
+	"github.com/evmos/evmos/v11/x/auction/types"
 )
 
 func (k msgServer) BidOrder(goCtx context.Context, msg *types.MsgBidOrder) (*types.MsgBidOrderResponse, error) {

@@ -1,3 +1,19 @@
+// Copyright 2022 Evmos Foundation
+// This file is part of the Evmos Network packages.
+//
+// Evmos is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The Evmos packages are distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the Evmos packages. If not, see https://github.com/evmos/evmos/blob/main/LICENSE
+
 package cli
 
 import (
@@ -10,7 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/version"
 
-	"github.com/gauss/gauss/v6/x/claims/types"
+	"github.com/evmos/evmos/v11/x/claims/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -134,7 +150,7 @@ func GetCmdQueryClaimsRecords() *cobra.Command {
 // GetCmdQueryClaimsRecord implements the query claims record command.
 func GetCmdQueryClaimsRecord() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "record [address]",
+		Use:     "record ADDRESS",
 		Args:    cobra.ExactArgs(1),
 		Short:   "Query the claims records for an account.",
 		Long:    "Query the claims records for an account.\nThis contains an address' initial claimable amount, and the claims per action.",

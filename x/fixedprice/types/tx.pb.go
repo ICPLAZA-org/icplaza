@@ -7,7 +7,7 @@ import (
 	context "context"
 	fmt "fmt"
 	types "github.com/cosmos/cosmos-sdk/types"
-	types1 "github.com/gauss/gauss/v6/x/nft/types"
+	types1 "github.com/evmos/evmos/v11/x/nft/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"

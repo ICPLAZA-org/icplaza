@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 
-	farmcli "github.com/gauss/gauss/v6/x/farm/client/cli"
+	farmcli "github.com/evmos/evmos/v11/x/farm/client/cli"
 )
 
 // CreateFarmPoolExec creates a redelegate message.

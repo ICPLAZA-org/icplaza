@@ -3,14 +3,17 @@ package keeper_test
 import (
 	"fmt"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/evmos/ethermint/tests"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/gauss/gauss/v6/contracts"
-	"github.com/gauss/gauss/v6/x/erc20/keeper"
-	"github.com/gauss/gauss/v6/x/erc20/types"
+	"github.com/evmos/evmos/v11/contracts"
+	"github.com/evmos/evmos/v11/x/erc20/keeper"
+	"github.com/evmos/evmos/v11/x/erc20/types"
 )
 
 func (suite *KeeperTestSuite) TestQueryERC20() {
@@ -88,9 +91,11 @@ func (suite *KeeperTestSuite) TestBalanceOf() {
 	for _, tc := range testCases {
 		suite.SetupTest() // reset
 		mockEVMKeeper = &MockEVMKeeper{}
-		sp, found := suite.app.ParamsKeeper.GetSubspace(types.ModuleName)
-		suite.Require().True(found)
-		suite.app.Erc20Keeper = keeper.NewKeeper(suite.app.GetKey("erc20"), suite.app.AppCodec(), sp, suite.app.AccountKeeper, suite.app.BankKeeper, mockEVMKeeper)
+		suite.app.Erc20Keeper = keeper.NewKeeper(
+			suite.app.GetKey("erc20"), suite.app.AppCodec(),
+			authtypes.NewModuleAddress(govtypes.ModuleName),
+			suite.app.AccountKeeper, suite.app.BankKeeper,
+			mockEVMKeeper, suite.app.StakingKeeper, suite.app.ClaimsKeeper)
 
 		tc.malleate()
 
@@ -275,9 +280,10 @@ func (suite *KeeperTestSuite) TestForceFail() {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			suite.SetupTest() // reset
 			mockEVMKeeper = &MockEVMKeeper{}
-			sp, found := suite.app.ParamsKeeper.GetSubspace(types.ModuleName)
-			suite.Require().True(found)
-			suite.app.Erc20Keeper = keeper.NewKeeper(suite.app.GetKey("erc20"), suite.app.AppCodec(), sp, suite.app.AccountKeeper, suite.app.BankKeeper, mockEVMKeeper)
+			suite.app.Erc20Keeper = keeper.NewKeeper(
+				suite.app.GetKey("erc20"), suite.app.AppCodec(),
+				authtypes.NewModuleAddress(govtypes.ModuleName), suite.app.AccountKeeper,
+				suite.app.BankKeeper, mockEVMKeeper, suite.app.StakingKeeper, suite.app.ClaimsKeeper)
 
 			tc.malleate()
 
@@ -363,9 +369,10 @@ func (suite *KeeperTestSuite) TestQueryERC20ForceFail() {
 	for _, tc := range testCases {
 		suite.SetupTest() // reset
 		mockEVMKeeper = &MockEVMKeeper{}
-		sp, found := suite.app.ParamsKeeper.GetSubspace(types.ModuleName)
-		suite.Require().True(found)
-		suite.app.Erc20Keeper = keeper.NewKeeper(suite.app.GetKey("erc20"), suite.app.AppCodec(), sp, suite.app.AccountKeeper, suite.app.BankKeeper, mockEVMKeeper)
+		suite.app.Erc20Keeper = keeper.NewKeeper(
+			suite.app.GetKey("erc20"), suite.app.AppCodec(),
+			authtypes.NewModuleAddress(govtypes.ModuleName), suite.app.AccountKeeper,
+			suite.app.BankKeeper, mockEVMKeeper, suite.app.StakingKeeper, suite.app.ClaimsKeeper)
 
 		tc.malleate()
 

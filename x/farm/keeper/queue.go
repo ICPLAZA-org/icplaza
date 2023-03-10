@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/gauss/gauss/v6/x/farm/types"
+	"github.com/evmos/evmos/v11/x/farm/types"
 )
 
 func (k Keeper) Expired(ctx sdk.Context, pool types.FarmPool) bool {

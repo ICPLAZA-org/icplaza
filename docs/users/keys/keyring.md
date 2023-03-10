@@ -23,15 +23,19 @@ evmosd keys [command] --help
 To create a new key in the keyring, run the `add` subcommand with a `<key_name>` argument. You will have to provide a password for the newly generated key. This key will be used in the next section.
 
 ```bash
-evmosd keys add mykey
+evmosd keys add dev0
 
 # Put the generated address in a variable for later use.
-MY_VALIDATOR_ADDRESS=$(evmosd keys show mykey -a)
+MY_VALIDATOR_ADDRESS=$(evmosd keys show dev0 -a)
 ```
 
 This command generates a new 24-word mnemonic phrase, persists it to the relevant backend, and outputs information about the keypair. If this keypair will be used to hold value-bearing tokens, be sure to write down the mnemonic phrase somewhere safe!
 
 By default, the keyring generates a `eth_secp256k1` key. The keyring also supports `ed25519` keys, which may be created by passing the `--algo` flag. A keyring can of course hold both types of keys simultaneously.
+
+:::tip
+**Note**: The Ethereum address associated with a public key can be derived by taking the full Ethereum public key of type `eth_secp256k1`, computing the `Keccak-256` hash, and truncating the first twelve bytes.
+:::
 
 ::: warning
 **NOTE**: Cosmos `secp256k1` keys are not supported on Evmos due to compatibility issues with Ethereum transactions.

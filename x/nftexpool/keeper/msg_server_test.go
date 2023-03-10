@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-	"github.com/gauss/gauss/v6/x/nftexpool/types"
+	"github.com/evmos/evmos/v11/x/nftexpool/types"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

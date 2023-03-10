@@ -7,7 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/gauss/gauss/v6/x/farm/types"
+	"github.com/evmos/evmos/v11/x/farm/types"
 )
 
 // RegisterInvariants registers all invariants

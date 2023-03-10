@@ -10,32 +10,31 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/evmos/ethermint/crypto/ethsecp256k1"
 	"github.com/evmos/ethermint/encoding"
 	"github.com/evmos/ethermint/tests"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
-	"github.com/gauss/gauss/v6/app"
-	"github.com/gauss/gauss/v6/testutil"
-	incentivestypes "github.com/gauss/gauss/v6/x/incentives/types"
-	inflationtypes "github.com/gauss/gauss/v6/x/inflation/types"
+	"github.com/evmos/evmos/v11/app"
+	"github.com/evmos/evmos/v11/testutil"
+	incentivestypes "github.com/evmos/evmos/v11/x/incentives/types"
+	inflationtypes "github.com/evmos/evmos/v11/x/inflation/types"
 
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/evmos/ethermint/server/config"
 	evm "github.com/evmos/ethermint/x/evm/types"
-	"github.com/gauss/gauss/v6/contracts"
-	"github.com/gauss/gauss/v6/x/claims/types"
+	"github.com/evmos/evmos/v11/contracts"
+	"github.com/evmos/evmos/v11/x/claims/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -51,7 +50,7 @@ var _ = Describe("Claiming", Ordered, func() {
 	totalClaimsAmount := sdk.NewCoin(claimsDenom, claimValue.MulRaw(int64(accountCount)))
 
 	// account initial balances
-	initClaimsAmount := sdk.NewInt(int64(math.Pow10(5) * 2))
+	initClaimsAmount := sdk.NewInt(types.GenesisDust)
 	initEvmAmount := sdk.NewInt(int64(math.Pow10(18) * 2))
 	initStakeAmount := sdk.NewInt(int64(math.Pow10(10) * 2))
 	delegateAmount := sdk.NewCoin(claimsDenom, sdk.NewInt(1))
@@ -90,7 +89,7 @@ var _ = Describe("Claiming", Ordered, func() {
 		// mint coins for claiming and send them to the claims module
 		coins := sdk.NewCoins(totalClaimsAmount)
 
-		err := testutil.FundModuleAccount(s.app.BankKeeper, s.ctx, inflationtypes.ModuleName, coins)
+		err := testutil.FundModuleAccount(s.ctx, s.app.BankKeeper, inflationtypes.ModuleName, coins)
 		s.Require().NoError(err)
 		err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, inflationtypes.ModuleName, types.ModuleName, coins)
 		s.Require().NoError(err)
@@ -98,13 +97,13 @@ var _ = Describe("Claiming", Ordered, func() {
 		// fund testing accounts and create claim records
 		priv0, _ = ethsecp256k1.GenerateKey()
 		addr0 = getAddr(priv0)
-		testutil.FundAccount(s.app.BankKeeper, s.ctx, addr0, initBalance0)
+		testutil.FundAccount(s.ctx, s.app.BankKeeper, addr0, initBalance0)
 
 		for i := 0; i < accountCount; i++ {
 			priv, _ := ethsecp256k1.GenerateKey()
 			privs = append(privs, priv)
 			addr := getAddr(priv)
-			testutil.FundAccount(s.app.BankKeeper, s.ctx, addr, initBalance)
+			testutil.FundAccount(s.ctx, s.app.BankKeeper, addr, initBalance)
 			claimsRecord := types.NewClaimsRecord(claimValue)
 			s.app.ClaimsKeeper.SetClaimsRecord(s.ctx, addr, claimsRecord)
 			acc := s.app.AccountKeeper.NewAccountWithAddress(s.ctx, addr)
@@ -337,7 +336,7 @@ func govProposal(priv *ethsecp256k1.PrivKey) uint64 {
 	)
 
 	deposit := sdk.NewCoins(sdk.NewCoin(stakeDenom, sdk.NewInt(100000000)))
-	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, accountAddress)
+	msg, err := govv1beta1.NewMsgSubmitProposal(content, deposit, accountAddress)
 	s.Require().NoError(err)
 
 	res := deliverTx(priv, msg)
@@ -354,7 +353,7 @@ func govProposal(priv *ethsecp256k1.PrivKey) uint64 {
 func vote(priv *ethsecp256k1.PrivKey, proposalID uint64) {
 	accountAddress := sdk.AccAddress(priv.PubKey().Address().Bytes())
 
-	voteMsg := govtypes.NewMsgVote(accountAddress, proposalID, 2)
+	voteMsg := govv1beta1.NewMsgVote(accountAddress, proposalID, govv1beta1.OptionAbstain)
 	deliverTx(priv, voteMsg)
 }
 
@@ -404,30 +403,19 @@ func deployContract(priv *ethsecp256k1.PrivKey) common.Address {
 }
 
 func performEthTx(priv *ethsecp256k1.PrivKey, msgEthereumTx *evmtypes.MsgEthereumTx) {
+	// Sign transaction
+	err := msgEthereumTx.Sign(s.ethSigner, tests.NewSigner(priv))
+	s.Require().NoError(err)
+
+	// Assemble transaction from fields
 	encodingConfig := encoding.MakeConfig(app.ModuleBasics)
-	option, err := codectypes.NewAnyWithValue(&evmtypes.ExtensionOptionsEthereumTx{})
-	s.Require().NoError(err)
-
 	txBuilder := encodingConfig.TxConfig.NewTxBuilder()
-	builder, ok := txBuilder.(authtx.ExtensionOptionsTxBuilder)
-	s.Require().True(ok)
-	builder.SetExtensionOptions(option)
-
-	err = msgEthereumTx.Sign(s.ethSigner, tests.NewSigner(priv))
+	tx, err := msgEthereumTx.BuildTx(txBuilder, evmtypes.DefaultEVMDenom)
 	s.Require().NoError(err)
 
-	err = txBuilder.SetMsgs(msgEthereumTx)
-	s.Require().NoError(err)
-
-	txData, err := evmtypes.UnpackTxData(msgEthereumTx.Data)
-	s.Require().NoError(err)
-
-	fees := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewIntFromBigInt(txData.Fee())))
-	builder.SetFeeAmount(fees)
-	builder.SetGasLimit(msgEthereumTx.GetGas())
-
-	// bz are bytes to be broadcasted over the network
-	bz, err := encodingConfig.TxConfig.TxEncoder()(txBuilder.GetTx())
+	// Encode transaction by default Tx encoder and broadcasted over the network
+	txEncoder := encodingConfig.TxConfig.TxEncoder()
+	bz, err := txEncoder(tx)
 	s.Require().NoError(err)
 
 	req := abci.RequestDeliverTx{Tx: bz}

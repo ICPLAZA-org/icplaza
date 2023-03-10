@@ -19,9 +19,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/gauss/gauss/v6/x/farm/client/cli"
-	"github.com/gauss/gauss/v6/x/farm/keeper"
-	"github.com/gauss/gauss/v6/x/farm/types"
+	"github.com/evmos/evmos/v11/x/farm/client/cli"
+	"github.com/evmos/evmos/v11/x/farm/keeper"
+	"github.com/evmos/evmos/v11/x/farm/types"
 )
 
 var (

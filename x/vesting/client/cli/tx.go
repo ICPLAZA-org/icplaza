@@ -1,3 +1,19 @@
+// Copyright 2022 Evmos Foundation
+// This file is part of the Evmos Network packages.
+//
+// Evmos is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The Evmos packages are distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the Evmos packages. If not, see https://github.com/evmos/evmos/blob/main/LICENSE
+
 package cli
 
 import (
@@ -12,7 +28,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 
-	"github.com/gauss/gauss/v6/x/vesting/types"
+	"github.com/evmos/evmos/v11/x/vesting/types"
 )
 
 // Transaction command flags
@@ -40,6 +56,7 @@ func NewTxCmd() *cobra.Command {
 	txCmd.AddCommand(
 		NewMsgCreateClawbackVestingAccountCmd(),
 		NewMsgClawbackCmd(),
+		NewMsgUpdateVestingFunderCmd(),
 	)
 
 	return txCmd
@@ -49,7 +66,7 @@ func NewTxCmd() *cobra.Command {
 // MsgCreateClawbackVestingAccount transaction.
 func NewMsgCreateClawbackVestingAccountCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-clawback-vesting-account [to_address]",
+		Use:   "create-clawback-vesting-account TO_ADDRESS",
 		Short: "Create a new vesting account funded with an allocation of tokens, subject to clawback.",
 		Long: `Must provide a lockup periods file (--lockup), a vesting periods file (--vesting), or both.
 If both files are given, they must describe schedules for the same total amount.
@@ -61,18 +78,19 @@ Coins may not be transferred out of the account if they are locked or unvested. 
 A periods file is a JSON object describing a sequence of unlocking or vesting events,
 with a start time and an array of coins strings and durations relative to the start or previous event.`,
 		Example: `Sample period file contents:
-		{ "start_time": 1625204910,
-	      "period": [
-			  {
-				  "coins": "10test",
-				  "length_seconds": 2592000 //30 days
-			  },
-			  {
-				"coins": "10test",
-				"length_seconds": 2592000 //30 days
-			}
-		]}
-	    `,
+{
+  "start_time": 1625204910,
+  "periods": [
+    {
+      "coins": "10test",
+      "length_seconds": 2592000 //30 days
+    },
+    {
+      "coins": "10test",
+      "length_seconds": 2592000 //30 days
+    }
+  ]
+}`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var (
@@ -132,7 +150,7 @@ with a start time and an array of coins strings and durations relative to the st
 // MsgClawback transaction.
 func NewMsgClawbackCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "clawback [address]",
+		Use:   "clawback ADDRESS",
 		Short: "Transfer unvested amount out of a ClawbackVestingAccount.",
 		Long: `Must be requested by the original funder address (--from).
 		May provide a destination address (--dest), otherwise the coins return to the funder.
@@ -169,6 +187,43 @@ func NewMsgClawbackCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String(FlagDest, "", "address of destination (defaults to funder)")
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+// NewMsgUpdateVestingFunderCmd returns a CLI command handler for updating
+// the funder of a ClawbackVestingAccount.
+func NewMsgUpdateVestingFunderCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-vesting-funder VESTING_ACCOUNT_ADDRESS NEW_FUNDER_ADDRESS",
+		Short: "Update the funder account of an existing ClawbackVestingAccount.",
+		Long: `Must be requested by the original funder address (--from).
+		Need to provide the target VESTING_ACCOUNT_ADDRESS to update and the NEW_FUNDER_ADDRESS.`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			vestingAcc, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			newFunder, err := sdk.AccAddressFromBech32(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgUpdateVestingFunder(clientCtx.GetFromAddress(), newFunder, vestingAcc)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

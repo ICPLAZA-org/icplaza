@@ -10,18 +10,18 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	transfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	ibcgotesting "github.com/cosmos/ibc-go/v3/testing"
+	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
+	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
+	ibcgotesting "github.com/cosmos/ibc-go/v6/testing"
 
-	ibctesting "github.com/gauss/gauss/v6/ibc/testing"
+	ibctesting "github.com/evmos/evmos/v11/ibc/testing"
 
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	"github.com/gauss/gauss/v6/app"
-	claimtypes "github.com/gauss/gauss/v6/x/claims/types"
-	inflationtypes "github.com/gauss/gauss/v6/x/inflation/types"
-	"github.com/gauss/gauss/v6/x/recovery/types"
+	"github.com/evmos/evmos/v11/app"
+	claimstypes "github.com/evmos/evmos/v11/x/claims/types"
+	inflationtypes "github.com/evmos/evmos/v11/x/inflation/types"
+	"github.com/evmos/evmos/v11/x/recovery/types"
 )
 
 type IBCTestingSuite struct {
@@ -83,7 +83,7 @@ func (suite *IBCTestingSuite) SetupTest() {
 	err = suite.IBCCosmosChain.GetSimApp().BankKeeper.SendCoinsFromModuleToAccount(suite.IBCCosmosChain.GetContext(), minttypes.ModuleName, suite.IBCCosmosChain.SenderAccount.GetAddress(), coins)
 	suite.Require().NoError(err)
 
-	claimparams := claimtypes.DefaultParams()
+	claimparams := claimstypes.DefaultParams()
 	claimparams.AirdropStartTime = suite.EvmosChain.GetContext().BlockTime()
 	claimparams.EnableClaims = true
 	suite.EvmosChain.App.(*app.Evmos).ClaimsKeeper.SetParams(suite.EvmosChain.GetContext(), claimparams)
@@ -103,42 +103,15 @@ func (suite *IBCTestingSuite) SetupTest() {
 	suite.Require().Equal("channel-0", suite.pathOsmosisEvmos.EndpointA.ChannelID)
 }
 
-var (
-	timeoutHeight = clienttypes.NewHeight(1000, 1000)
-
-	uosmoDenomtrace = transfertypes.DenomTrace{
-		Path:      "transfer/channel-0",
-		BaseDenom: "uosmo",
-	}
-
-	uosmoIbcdenom = uosmoDenomtrace.IBCDenom()
-
-	uatomDenomtrace = transfertypes.DenomTrace{
-		Path:      "transfer/channel-1",
-		BaseDenom: "uatom",
-	}
-	uatomIbcdenom = uatomDenomtrace.IBCDenom()
-
-	aevmosDenomtrace = transfertypes.DenomTrace{
-		Path:      "transfer/channel-0",
-		BaseDenom: "aevmos",
-	}
-	aevmosIbcdenom = aevmosDenomtrace.IBCDenom()
-
-	uatomOsmoDenomtrace = transfertypes.DenomTrace{
-		Path:      "transfer/channel-0/transfer/channel-1",
-		BaseDenom: "uatom",
-	}
-	uatomOsmoIbcdenom = uatomOsmoDenomtrace.IBCDenom()
-)
+var timeoutHeight = clienttypes.NewHeight(1000, 1000)
 
 func (suite *IBCTestingSuite) SendAndReceiveMessage(path *ibcgotesting.Path, origin *ibcgotesting.TestChain, coin string, amount int64, sender string, receiver string, seq uint64) {
 	// Send coin from A to B
-	transferMsg := transfertypes.NewMsgTransfer(path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, sdk.NewCoin(coin, sdk.NewInt(amount)), sender, receiver, timeoutHeight, 0)
+	transferMsg := transfertypes.NewMsgTransfer(path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, sdk.NewCoin(coin, sdk.NewInt(amount)), sender, receiver, timeoutHeight, 0, "")
 	_, err := origin.SendMsgs(transferMsg)
 	suite.Require().NoError(err) // message committed
 	// Recreate the packet that was sent
-	transfer := transfertypes.NewFungibleTokenPacketData(coin, strconv.Itoa(int(amount)), sender, receiver)
+	transfer := transfertypes.NewFungibleTokenPacketData(coin, strconv.Itoa(int(amount)), sender, receiver, "")
 	packet := channeltypes.NewPacket(transfer.GetBytes(), seq, path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, path.EndpointB.ChannelConfig.PortID, path.EndpointB.ChannelID, timeoutHeight, 0)
 	// Receive message on the counterparty side, and send ack
 	err = path.RelayPacket(packet)

@@ -13,7 +13,7 @@ Configure and run an Evmos node {synopsis}
 
 ## Automated deployment
 
-Run the local node by running the `init.sh` script in the base directory of the repository.
+Run the local node by running the `local_node.sh` script in the base directory of the repository.
 
 ::: warning
 The script below will remove any pre-existing binaries installed. Use the manual deploy if you want
@@ -21,7 +21,7 @@ to keep your binaries and configuration files.
 :::
 
 ```bash
-./init.sh
+./local_node.sh
 ```
 
 ## Manual deployment
@@ -39,7 +39,7 @@ evmosd start --json-rpc.enable=true --json-rpc.api="eth,web3,net"
 
 ## Key Management
 
-To run a node with the same key every time: replace `evmosd keys add $KEY` in `./init.sh` with:
+To run a node with the same key every time: replace `evmosd keys add $KEY` in `./local_node.sh` with:
 
 ```bash
 echo "your mnemonic here" | evmosd keys add $KEY --recover
@@ -83,6 +83,17 @@ evmosd config keyring-backend file
 :::tip
 For more information about the Keyring and its backend options, click [here](./../../users/keys/keyring.md).
 :::
+
+## Enable Tracing
+
+ To enable tracing when running the node, modify the last line of the `local_node.sh` script to be the following command, where:
+
+- `$TRACER` is the EVM tracer type to collect execution traces from the EVM transaction execution (eg. `json|struct|access_list|markdown`)
+- `$TRACESTORE` is the output file which contains KVStore tracing (eg. `store.txt`)
+
+```bash
+evmosd start --evm.tracer $TRACER --tracestore $TRACESTORE --pruning=nothing $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aevmos --json-rpc.api eth,txpool,personal,net,debug,web3
+```
 
 ## Clearing data from chain
 

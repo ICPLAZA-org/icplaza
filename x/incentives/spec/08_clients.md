@@ -27,7 +27,7 @@ evmosd query incentives incentives [flags]
 Allows users to query an incentive for a given contract.
 
 ```go
-evmosd query incentives incentive [contract-address] [flags]
+evmosd query incentives incentive CONTRACT_ADDRESS [flags]
 ```
 
 **`gas-meters`**
@@ -35,7 +35,7 @@ evmosd query incentives incentive [contract-address] [flags]
 Allows users to query all gas meters for a given incentive.
 
 ```bash
-evmosd query incentives gas-meters [contract-address] [flags]
+evmosd query incentives gas-meters CONTRACT_ADDRESS [flags]
 ```
 
 **`gas-meter`**
@@ -43,7 +43,7 @@ evmosd query incentives gas-meters [contract-address] [flags]
 Allows users to query a gas meter for a given incentive and user.
 
 ```go
-evmosd query incentives gas-meter [contract-address] [participant-address] [flags]
+evmosd query incentives gas-meter CONTRACT_ADDRESS PARTICIPANT_ADDRESS [flags]
 ```
 
 **`params`**
@@ -56,14 +56,14 @@ evmosd query incentives params [flags]
 
 ### Proposals
 
-The `tx gov submit-proposal` commands allow users to query create a proposal using the governance module CLI:
+The `tx gov submit-legacy-proposal` commands allow users to query create a proposal using the governance module CLI:
 
 **`register-incentive`**
 
 Allows users to submit a `RegisterIncentiveProposal`.
 
 ```bash
-evmosd tx gov submit-proposal register-incentive [contract-address] [allocation] [epochs] [flags]
+evmosd tx gov submit-legacy-proposal register-incentive CONTRACT_ADDRESS ALLOCATION EPOCHS [flags]
 ```
 
 **`cancel-incentive`**
@@ -71,7 +71,7 @@ evmosd tx gov submit-proposal register-incentive [contract-address] [allocation]
 Allows users to submit a `CanelIncentiveProposal`.
 
 ```bash
-evmosd tx gov submit-proposal cancel-incentive [contract-address] [flags]
+evmosd tx gov submit-legacy-proposal cancel-incentive CONTRACT_ADDRESS [flags]
 ```
 
 **`param-change`**
@@ -79,7 +79,7 @@ evmosd tx gov submit-proposal cancel-incentive [contract-address] [flags]
 Allows users to submit a `ParameterChangeProposal``.
 
 ```bash
-evmosd tx gov submit-proposal param-change [proposal-file] [flags]
+evmosd tx gov submit-legacy-proposal param-change PROPOSAL_FILE [flags]
 ```
 
 ## gRPC

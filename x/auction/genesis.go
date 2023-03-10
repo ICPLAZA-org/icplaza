@@ -2,8 +2,8 @@ package auction
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/gauss/gauss/v6/x/auction/keeper"
-	"github.com/gauss/gauss/v6/x/auction/types"
+	"github.com/evmos/evmos/v11/x/auction/keeper"
+	"github.com/evmos/evmos/v11/x/auction/types"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis

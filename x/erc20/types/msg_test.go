@@ -3,6 +3,10 @@ package types
 import (
 	"testing"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -155,7 +159,7 @@ func (suite *MsgsTestSuite) TestMsgConvertERC20Getters() {
 func (suite *MsgsTestSuite) TestMsgConvertERC20New() {
 	testCases := []struct {
 		msg        string
-		amount     sdk.Int
+		amount     math.Int
 		receiver   sdk.AccAddress
 		contract   common.Address
 		sender     common.Address
@@ -186,7 +190,7 @@ func (suite *MsgsTestSuite) TestMsgConvertERC20New() {
 func (suite *MsgsTestSuite) TestMsgConvertERC20() {
 	testCases := []struct {
 		msg        string
-		amount     sdk.Int
+		amount     math.Int
 		receiver   string
 		contract   string
 		sender     string
@@ -243,5 +247,41 @@ func (suite *MsgsTestSuite) TestMsgConvertERC20() {
 		} else {
 			suite.Require().Error(err, "invalid test %d passed: %s, %v", i, tc.msg)
 		}
+	}
+}
+
+func (suite *MsgsTestSuite) TestMsgUpdateValidateBasic() {
+	testCases := []struct {
+		name      string
+		msgUpdate *MsgUpdateParams
+		expPass   bool
+	}{
+		{
+			"fail - invalid authority address",
+			&MsgUpdateParams{
+				Authority: "invalid",
+				Params:    DefaultParams(),
+			},
+			false,
+		},
+		{
+			"pass - valid msg",
+			&MsgUpdateParams{
+				Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+				Params:    DefaultParams(),
+			},
+			true,
+		},
+	}
+
+	for _, tc := range testCases {
+		suite.Run(tc.name, func() {
+			err := tc.msgUpdate.ValidateBasic()
+			if tc.expPass {
+				suite.NoError(err)
+			} else {
+				suite.Error(err)
+			}
+		})
 	}
 }

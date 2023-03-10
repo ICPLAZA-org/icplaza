@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/gauss/gauss/v6/x/farm/keeper"
-	"github.com/gauss/gauss/v6/x/farm/types"
+	"github.com/evmos/evmos/v11/x/farm/keeper"
+	"github.com/evmos/evmos/v11/x/farm/types"
 )
 
 // NewHandler creates an sdk.Handler for all the farm type messages
